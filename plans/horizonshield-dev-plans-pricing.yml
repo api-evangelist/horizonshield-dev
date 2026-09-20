@@ -1,0 +1,93 @@
+generated: '2026-09-19'
+method: searched
+source: https://shield.the-horizons-innovation.com/yakumo/plans/
+docs:
+- https://shield.the-horizons-innovation.com/kantei/
+- https://shield.the-horizons-innovation.com/tos
+- https://gate.horizonshield.dev/openapi.json
+plan_count: 7
+currency: JPY
+model: 'Every machine surface (MCP servers, A2A agents, gate register, JIDEC ledger, Claude plugin, npm client) is free with no account or key. Money is charged on the human side: per-document consumer appraisals via PayPal, and fixed monthly B2B plans (setup + subscription, tax included) for contractors listed on the Yakumo mall. The provider states on nearly every page that it takes no referral fee, listing commission or success fee.'
+summary: >-
+  Prices as published on 2026-09-19. The B2B plans page states all amounts are tax-inclusive, that the subscription
+  starts on the "apply" button, that the setup fee is invoiced separately after application, and that plans can be
+  cancelled any time with no minimum term. The verify-directory page states the gate check is "FREE · NO ACCOUNT ·
+  NO API KEY" and "free forever, listing included"; llms.txt notes that "price validation is a separate, paid tier"
+  whose price is not published.
+plans:
+- id: agent-surfaces-free
+  name: MCP / A2A / gate / ledger access
+  price: 0
+  currency: JPY
+  period: unlimited
+  included: 'KIRA MCP (15 tools) and A2A agent, gate register REST + MCP + A2A, JIDEC ledger REST + MCP + A2A, WebMCP intake, Yakumo directory MCP, femtech registry MCP; Claude Code plugin; mcp-conduct npm client; a2a-conduct-walk CLI'
+  limits: [undocumented rate limits (see rate-limits/); Premium Yakumo plan cites a "fair use, about 5,000 queries/month" guide for agent references to a member profile]
+  source: https://shield.the-horizons-innovation.com/verify-directory/ ("FREE · NO ACCOUNT · NO API KEY"); gate OpenAPI info.description ("No account, no key, no fee.")
+- id: free-diagnosis
+  name: 無料診断 (free estimate check)
+  price: 0
+  currency: JPY
+  period: per estimate
+  included: 'Upload a photo/PDF of an estimate; returns whether overcharge/defect concerns exist, the count of concerns and their headings; no amounts.'
+  source: https://shield.the-horizons-innovation.com/kantei/
+- id: kantei-appraisal
+  name: 見積もり鑑定書 (estimate appraisal PDF)
+  price: 5500
+  currency: JPY
+  period: per estimate
+  tax: included
+  included: '9-page PDF: per-item fair unit price and gap, total gap, public-data basis, negotiation template, certificate number and SHA-256 fingerprint; immediate PDF output; PayPal (card / Apple Pay).'
+  guarantee: '¥10,000以上の節約につながらなければ全額返金 (full refund if it does not lead to savings of ¥10,000 or more)'
+  source: https://shield.the-horizons-innovation.com/kantei/
+- id: expert-diagnosis
+  name: 建設費診断（専門家）(expert construction-cost diagnosis)
+  price: 55000
+  currency: JPY
+  period: per engagement
+  tax: included
+  included: A 30-year construction professional reviews the estimate and photos and drafts a corrective-demand letter; individual contact.
+  source: https://shield.the-horizons-innovation.com/kantei/
+- id: yakumo-light
+  name: Yakumo ライト (Light)
+  price: 10780
+  currency: JPY
+  period: month
+  setup_fee: 54780
+  tax: included
+  included: 'KIRA fair-price audit (verification badge), Yakumo mall listing (fail-closed), profile for 1 main trade (GEO/AEO/LLMO/JSON-LD), referenced from the aggregate MCP, quarterly profile update, ongoing case additions.'
+  limits: [cancel any time, no minimum term]
+  source: https://shield.the-horizons-innovation.com/yakumo/plans/
+- id: yakumo-standard
+  name: Yakumo スタンダード (Standard)
+  price: 43780
+  currency: JPY
+  period: month
+  setup_fee: 162800
+  tax: included
+  included: 'Everything in Light; up to 5 trades; 2 case pages/month; monthly content re-optimisation; monthly citation-monitoring report; continuous re-verification; Yakumo WebMCP referrals; quarterly strategy review.'
+  source: https://shield.the-horizons-innovation.com/yakumo/plans/
+- id: yakumo-premium
+  name: Yakumo プレミアム (Premium)
+  price: 107800
+  currency: JPY
+  period: month
+  price_note: from (〜)
+  setup_fee: 327800
+  setup_fee_note: from (〜)
+  tax: included
+  included: 'Everything in Standard; all trades; Yakumo WebMCP referrals ("AI agents reference your company directly; within fair use, about 5,000 queries/month as a guide"); monthly AI-query-count report; citation/search dashboard; full JIDEC audit log; quarterly review and priority support.'
+  source: https://shield.the-horizons-innovation.com/yakumo/plans/
+enterprise:
+- id: webmcp-partner
+  name: WebMCP Partner (dedicated MCP server)
+  price: null
+  note: 'Individual quote ("個別見積（お問い合わせ）"): a dedicated MCP server for the contractor (observed live at p001./p002.horizonshield.dev), all trades, full JIDEC audit log; granted only to stores whose endpoint actually runs.'
+  source: https://shield.the-horizons-innovation.com/yakumo/plans/
+- id: paid-price-validation
+  name: Price validation tier for third-party MCP servers
+  price: null
+  note: 'llms.txt: the free gate "verifies conformance and disclosure only … Price validation is a separate, paid tier." No price published.'
+  source: https://shield.the-horizons-innovation.com/llms.txt
+other_terms:
+- 'Prepaid tickets: some services consume pre-purchased tickets at ¥100 each; no expiry; non-transferable; unused balance refundable only before service delivery (ToS).'
+- 'Cancellation: full refund before report delivery (processed within 7 business days); no refund after delivery; site-inspection attendance refundable until 17:00 the day before (ToS).'

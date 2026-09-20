@@ -1,0 +1,43 @@
+generated: '2026-09-19'
+method: searched
+source: https://raw.githubusercontent.com/ogasurfproject-jpg/horizon-shield/main/workers/hs-ledger/nenrin/a2a-conduct-walk/pyproject.toml
+docs:
+- https://github.com/ogasurfproject-jpg/horizon-shield/blob/main/skills/conduct-witness/SKILL.md
+- https://github.com/ogasurfproject-jpg/horizon-shield#readme
+name: a2a-conduct-walk
+version: 1.1.0
+language: Python (standard library only, >=3.8)
+license: Apache-2.0
+package: packages/horizonshield-dev-packages.yml
+summary: >-
+  A first-party CLI that walks an A2A or MCP agent from the user's own machine as an independent witness, checks the
+  five Conduct Extension conditions, and files the observation on the public JIDEC ledger under the user's name with
+  a SHA-256 anyone can recompute. The same distribution ships a second entry point, conduct-witness-mcp, a stdio MCP
+  server so an agent can be a witness in one tool call. Install methods, flags and the reporting contract below are
+  taken verbatim from the provider's conduct-witness skill and pyproject; the CLI was not executed by this pipeline.
+install:
+- method: uvx (from git)
+  command: 'uvx --from "git+https://github.com/ogasurfproject-jpg/horizon-shield#subdirectory=workers/hs-ledger/nenrin/a2a-conduct-walk" a2a-conduct-walk --origin <ORIGIN> --mode a2a --submit --witness-name "<NAME>" --vantage "<VANTAGE>"'
+- method: single-file fallback (no uv)
+  command: 'curl -sSLO https://raw.githubusercontent.com/ogasurfproject-jpg/horizon-shield/main/workers/hs-ledger/nenrin/a2a-conduct-walk/a2a_conduct_walk.py && python3 a2a_conduct_walk.py --origin <ORIGIN> --mode a2a --submit --witness-name "<NAME>" --vantage "<VANTAGE>"'
+entry_points:
+- {command: a2a-conduct-walk, module: 'a2a_conduct_walk:main', kind: CLI}
+- {command: conduct-witness-mcp, module: 'conduct_witness_mcp:main', kind: stdio MCP server}
+commands:
+- group: walk
+  flags:
+  - {flag: --origin <https URL>, meaning: 'The agent''s card origin (card at <origin>/.well-known/agent-card.json), not a page on the site.'}
+  - {flag: --mode a2a, meaning: Walk over A2A (MCP mode also exists per the README).}
+  - {flag: --submit, meaning: 'File the observation on the ledger; omit to preview the assertions first.'}
+  - {flag: --witness-name "<NAME>", meaning: 'A person, a project, or "anonymous" — never invented; operators must say so ("Example Corp (operator)").'}
+  - {flag: --vantage "<VANTAGE>", meaning: 'Where the machine is, in a few words ("laptop, Osaka", "VPS eu-west", "CI runner").'}
+  - {flag: --transport curl, meaning: Rerun with curl if a fetch node shows http 403 at the edge.}
+  - {flag: --bind-task, meaning: 'Bind the observation to the real a2a.task.id returned by the walked agent (README "Task-bound conduct").'}
+output_contract:
+  report_back: [the purpose line (which endpoint), 'PASS n/5 or FAIL n/5', the record sha256, 'the intake''s answer (submitted … http 200, or why not)', 'the assertion list with pass / FAIL / n/a']
+  where_it_lands: 'Bundled once a day at 00:30 UTC at https://ledger.horizonshield.dev/ledger; the month''s ring counts the witness by name.'
+  rules: ['A FAIL is filed the same way as a PASS.', 'Do not walk an agent whose owner has declined (listing: "decline" in /.well-known/mcp-conduct.json).', 'One walk per agent per day; never submit twice to pad a count.', 'Never call it a rating, a score, or a verification of quality.']
+related_tools:
+- {name: mcp-conduct, kind: npm library, purpose: consult the gate before an MCP client connects}
+- {name: mcp-conduct-action, kind: GitHub Action, purpose: measure a repo's own MCP server in CI}
+- {name: Claude Code plugin slash commands, commands: [/audit, /red-flags, /verify], note: Chat commands, not a shell CLI.}

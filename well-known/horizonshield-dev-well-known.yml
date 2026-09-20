@@ -1,0 +1,238 @@
+generated: '2026-09-19'
+method: probed
+source: >-
+  Live GET probes of the named /.well-known/* path list, 2026-09-19, on every host the record knows: the registrable
+  apex and www, the documentation host, the parent-company site, every MCP server host, the OpenAPI servers[] host,
+  the ledger host and the two workers.dev origins. Every row is a request that was actually issued; every status is
+  the one returned. Status 0 means the hostname did not resolve (curl exit 6).
+summary:
+  hosts_probed: 11
+  documents_served: 14
+  hit_count: 14
+  path_echo_control: passed
+  note: >-
+    A rich .well-known surface, none of it on the registrable domain: horizonshield.dev has no address record on any
+    public resolver and carries only two identity TXT records, so everything sits on subdomains. Real documents:
+    an RFC 9727 api-catalog (application/linkset+json) on ledger.horizonshield.dev; RFC 9116 security.txt with
+    Contact + Policy (+ Expires on the ledger) on gate. and ledger.; A2A agent cards on six hosts (graded in a2a/);
+    a JWKS (ES256, kid hs-2026-09) on every card-serving host; and three provider-defined documents on the MCP host
+    (verification-contract.json — the versioned recomputation contract for every receipt; usage-stats.json — public
+    call counters; glama.json — registry maintainer record). NO OAuth/OIDC discovery anywhere (no
+    oauth-protected-resource on any MCP host, no oauth-authorization-server, no openid-configuration), no
+    ai-plugin.json, no APIs.json, no UCP/ACP, no AAuth. The documentation host (GitHub Pages) serves llms.txt,
+    llms-full.txt, robots.txt and sitemap.xml but nothing under /.well-known/ except a payment-domain association.
+    A negative-control path 404'd on every host that answered, and every miss is a real JSON or HTML 404, not a
+    200 shell.
+dns_txt_identity_records:
+  host: horizonshield.dev
+  records:
+  - value: 'v=MCPv1; k=ed25519; p=7fwx4Ib4DBGNd+0Yi34/nXEJZ6nFYOoudUR1gA/TwHc='
+    meaning: MCP registry DNS domain verification for the dev.horizonshield namespace (registry.modelcontextprotocol.io lists dev.horizonshield/horizon-shield 1.0.9).
+  - value: a2a-registry-verify=a2a_2d0b991baebb8def47e0914d6830ab26
+    meaning: a2aregistry.org domain verification.
+hosts:
+- host: horizonshield.dev
+  role: Registrable domain — identity anchor only; no A/AAAA record (dig @1.1.1.1 / @8.8.8.8 / @9.9.9.9 all NOERROR, ANSWER 0; NS courtney/jake.ns.cloudflare.com)
+  documents:
+  - {path: /.well-known/security.txt, status: 0, note: could not resolve host}
+  - {path: /.well-known/openid-configuration, status: 0}
+  - {path: /.well-known/oauth-authorization-server, status: 0}
+  - {path: /.well-known/oauth-protected-resource, status: 0}
+  - {path: /.well-known/api-catalog, status: 0}
+  - {path: /.well-known/ai-plugin.json, status: 0}
+  - {path: /.well-known/agent-card.json, status: 0}
+  - {path: /.well-known/agent.json, status: 0}
+  - {path: /.well-known/apis.json, status: 0}
+  - {path: /apis.json, status: 0}
+  - {path: /llms.txt, status: 0}
+- host: www.horizonshield.dev
+  role: No DNS record on any resolver
+  documents:
+  - {path: /.well-known/security.txt, status: 0, note: could not resolve host}
+  - {path: /.well-known/agent-card.json, status: 0}
+- host: mcp.horizonshield.dev
+  role: Flagship MCP server (Streamable HTTP) + A2A JSON-RPC endpoint — the RFC 9728 resource host
+  documents:
+  - path: /.well-known/agent-card.json
+    status: 200
+    content_type: application/json; charset=utf-8
+    bytes: 9940
+    file: ../a2a/horizonshield-dev-agent-card.json
+    standard: A2A Agent Card (protocolVersion 0.3.0, JWS-signed)
+    note: Saved verbatim under a2a/ and graded conformant in a2a/horizonshield-dev-a2a.yml.
+  - path: /.well-known/agent.json
+    status: 404
+    note: Real JSON 404 listing known_paths.
+  - path: /.well-known/verification-contract.json
+    status: 200
+    content_type: application/json; charset=utf-8
+    bytes: 5504
+    file: horizonshield-dev-verification-contract.json
+    standard: provider-defined (horizon-shield-verification-contract 0.3)
+    note: 'The versioned recompute contract behind every receipt: SHA-256(signed_payload) == claim_sha256, fail-closed result values (verified / partial / unverified), failure_reasons taxonomy, Bitcoin/OpenTimestamps anchor, and an inline changelog (0.1.1 -> 0.2 -> 0.3).'
+  - path: /.well-known/jwks.json
+    status: 200
+    content_type: application/json; charset=utf-8
+    bytes: 256
+    file: horizonshield-dev-jwks.json
+    standard: RFC 7517 JWK Set (one EC P-256 key, kid hs-2026-09, alg ES256, use sig)
+  - path: /.well-known/glama.json
+    status: 200
+    content_type: application/json; charset=utf-8
+    bytes: 110
+    file: horizonshield-dev-glama.json
+    standard: Glama MCP connector maintainer record
+  - path: /.well-known/usage-stats.json
+    status: 200
+    content_type: application/json; charset=utf-8
+    bytes: 1823
+    file: horizonshield-dev-usage-stats.json
+    standard: provider-defined
+    note: 'Public external-call counters (total 5,438; last 30 days 1,867; per-tool and per-day). The file states no payloads, prices or IPs are stored. Snapshot as fetched 2026-09-20T03:10Z.'
+  - {path: /.well-known/oauth-protected-resource, status: 404, note: 'MCP resource host; no RFC 9728 metadata. Real JSON 404.'}
+  - {path: /.well-known/oauth-authorization-server, status: 404}
+  - {path: /.well-known/openid-configuration, status: 404}
+  - {path: /.well-known/security.txt, status: 404}
+  - {path: /.well-known/api-catalog, status: 404}
+  - {path: /.well-known/ai-plugin.json, status: 404}
+  - {path: /.well-known/apis.json, status: 404}
+  - {path: /apis.json, status: 404}
+  - {path: /apis.yml, status: 404}
+  - {path: /.well-known/ucp.json, status: 404}
+  - {path: /.well-known/acp.json, status: 404}
+  - {path: /.well-known/aauth-resource.json, status: 404}
+  - {path: /openapi.json, status: 404}
+  - {path: /llms.txt, status: 404}
+  - {path: /robots.txt, status: 200, note: 'Cloudflare Content Signals PREAMBLE only (the explanatory comment block) — it contains no User-agent group and no Content-Signal directive line, so it expresses no preference; recorded, not credited.'}
+  - {path: /.well-known/horizonshield-negative-control-7e2a91.json, status: 404, control: negative}
+- host: hs-mcp.oga-surf-project.workers.dev
+  role: Cloudflare Workers origin behind mcp.horizonshield.dev; the URL a2aregistry.org lists
+  documents:
+  - {path: /.well-known/agent-card.json, status: 200, content_type: application/json, bytes: 9631, note: 'Same card as the custom domain minus the signatures[] block; not saved separately.'}
+  - {path: /.well-known/agent.json, status: 404}
+  - {path: /.well-known/oauth-protected-resource, status: 404}
+  - {path: /.well-known/oauth-authorization-server, status: 404}
+  - {path: /.well-known/openid-configuration, status: 404}
+  - {path: /.well-known/security.txt, status: 404}
+  - {path: /.well-known/api-catalog, status: 404}
+  - {path: /.well-known/ai-plugin.json, status: 404}
+  - {path: /openapi.json, status: 404}
+  - {path: /llms.txt, status: 404}
+  - {path: /.well-known/horizonshield-negative-control-7e2a91.json, status: 404, control: negative}
+- host: gate.horizonshield.dev
+  role: MCP Verification Gate — OpenAPI servers[] host, MCP (/mcp) and A2A (/a2a) host
+  documents:
+  - path: /.well-known/security.txt
+    status: 200
+    content_type: text/plain; charset=utf-8
+    bytes: 527
+    file: horizonshield-dev-security.txt
+    standard: RFC 9116
+    fields: {Contact: 'mailto:contact@the-horizons-innovation.com', Preferred-Languages: 'en, ja', Canonical: 'https://gate.horizonshield.dev/.well-known/security.txt', Policy: 'https://shield.the-horizons-innovation.com/verify-directory/', Expires: absent}
+    note: 'No Expires line (RFC 9116 requires one). The comment block says a wrong verdict "is a security problem, not a support ticket" and that contradicting reports will be published.'
+  - path: /.well-known/agent-card.json
+    status: 200
+    content_type: application/json; charset=utf-8
+    bytes: 4090
+    file: ../a2a/horizonshield-dev-gate-agent-card.json
+    standard: A2A Agent Card (0.3.0, JWS-signed) — graded conformant
+  - {path: /.well-known/jwks.json, status: 200, content_type: 'application/json; charset=utf-8', bytes: 256, note: 'Same key (kid hs-2026-09) as the MCP host; identical bytes to horizonshield-dev-jwks.json.'}
+  - {path: /.well-known/agent.json, status: 404}
+  - {path: /.well-known/oauth-protected-resource, status: 404, note: MCP resource host (/mcp); no RFC 9728 metadata.}
+  - {path: /.well-known/oauth-authorization-server, status: 404}
+  - {path: /.well-known/api-catalog, status: 404}
+  - {path: /llms.txt, status: 404}
+  - {path: /openapi.json, status: 200, content_type: 'application/json; charset=utf-8', bytes: 13151, note: 'OpenAPI 3.1.0 "MCP conduct register" 0.4.7 — saved to openapi/horizonshield-dev-mcp-conduct-register-openapi.json. Not a well-known path; recorded because it is the family''s one contract.'}
+  - {path: /robots.txt, status: 200, note: 'User-agent: * / Allow: / / Sitemap: https://gate.horizonshield.dev/sitemap.xml'}
+  - {path: /.well-known/horizonshield-negative-control-7e2a91.json, status: 404, control: negative}
+- host: ledger.horizonshield.dev
+  role: JIDEC public verification ledger — REST routes, A2A (/a2a), RFC 9727 catalog host
+  documents:
+  - path: /.well-known/api-catalog
+    status: 200
+    content_type: application/linkset+json; charset=utf-8
+    bytes: 1903
+    file: horizonshield-dev-api-catalog.json
+    standard: RFC 9727 API Catalog (linkset)
+    note: 'One anchor (https://ledger.horizonshield.dev/) with ten items: /health, /ledger, /paths, /cite/{citation}, /verify/{n}, /reference/{sha}, the agent card, /a2a, the MCP endpoint https://jidec.horizonshield.dev/mcp, and /llms.txt. Served with the correct linkset media type.'
+  - path: /.well-known/security.txt
+    status: 200
+    content_type: text/plain; charset=utf-8
+    bytes: 536
+    file: horizonshield-dev-ledger-security.txt
+    standard: RFC 9116
+    fields: {Contact: 'mailto:thehorizon.nnovation@icloud.com', Expires: '2027-07-26T00:00:00.000Z', Preferred-Languages: 'ja, en', Canonical: 'https://ledger.horizonshield.dev/.well-known/security.txt', Policy: 'https://ledger.horizonshield.dev/llms.txt'}
+  - path: /.well-known/agent-card.json
+    status: 200
+    content_type: application/json; charset=utf-8
+    bytes: 4464
+    file: ../a2a/horizonshield-dev-jidec-agent-card.json
+    standard: A2A Agent Card (0.3.0, JWS-signed) — graded conformant
+  - {path: /.well-known/jwks.json, status: 200, bytes: 256, note: Same key as the other hosts.}
+  - {path: /.well-known/agent.json, status: 404, note: 'Real JSON 404 ({"error":"not found","routes":[…]}, 101 bytes).'}
+  - {path: /.well-known/oauth-protected-resource, status: 404}
+  - {path: /.well-known/oauth-authorization-server, status: 404}
+  - {path: /openapi.json, status: 404}
+  - {path: /llms.txt, status: 200, content_type: 'text/markdown; charset=utf-8', bytes: 3887, note: 'Saved to llms/horizonshield-dev-jidec-llms.txt — the ledger''s verification guide, also the security.txt Policy target.'}
+  - {path: /.well-known/horizonshield-negative-control-7e2a91.json, status: 404, control: negative}
+- host: hs-ledger.oga-surf-project.workers.dev
+  role: Workers origin behind ledger.horizonshield.dev (the URLs the KIRA card's ledger block names)
+  documents:
+  - {path: /.well-known/api-catalog, status: 200, content_type: 'application/linkset+json; charset=utf-8', bytes: 2043, note: Same catalog with workers.dev hrefs.}
+  - {path: /.well-known/security.txt, status: 200, bytes: 564}
+  - {path: /.well-known/agent-card.json, status: 200, bytes: 4221}
+  - {path: /.well-known/agent.json, status: 404}
+  - {path: /.well-known/oauth-protected-resource, status: 404}
+  - {path: /.well-known/oauth-authorization-server, status: 404}
+  - {path: /openapi.json, status: 404}
+  - {path: /llms.txt, status: 200, bytes: 4041}
+- host: jidec.horizonshield.dev
+  role: JIDEC read-only MCP host (/mcp) and A2A (/a2a)
+  documents:
+  - {path: /.well-known/agent-card.json, status: 200, content_type: application/json, bytes: 5076, note: JIDEC card variant naming https://jidec.horizonshield.dev/a2a; the ledger-host copy is the one saved.}
+  - {path: /.well-known/oauth-protected-resource, status: 404, note: MCP resource host; no RFC 9728 metadata (inferred from the sibling hosts' identical router; probed on hs-jidec-mcp origin -> 404).}
+- host: shield.the-horizons-innovation.com
+  role: Documentation / product site (GitHub Pages; provider.url and documentationUrl in every card)
+  documents:
+  - {path: /.well-known/security.txt, status: 404, note: GitHub Pages HTML 404 (9,379 bytes) for every /.well-known/* path below.}
+  - {path: /security.txt, status: 404}
+  - {path: /.well-known/openid-configuration, status: 404}
+  - {path: /.well-known/oauth-authorization-server, status: 404}
+  - {path: /.well-known/oauth-protected-resource, status: 404}
+  - {path: /.well-known/api-catalog, status: 404}
+  - {path: /.well-known/ai-plugin.json, status: 404}
+  - {path: /.well-known/apis.json, status: 404}
+  - {path: /apis.json, status: 404}
+  - {path: /apis.yml, status: 404}
+  - {path: /.well-known/ucp.json, status: 404}
+  - {path: /.well-known/acp.json, status: 404}
+  - {path: /.well-known/aauth-resource.json, status: 404}
+  - {path: /.well-known/agent-card.json, status: 404}
+  - {path: /.well-known/agent.json, status: 404}
+  - {path: /.well-known/mcp-conduct.json, status: 404, note: 'The provider''s own conduct-witness skill says a host may decline measurement via this file; the docs host does not serve one.'}
+  - {path: /llms.txt, status: 200, content_type: 'text/plain; charset=utf-8', bytes: 93087, note: Saved to llms/horizonshield-dev-llms.txt.}
+  - {path: /llms-full.txt, status: 200, bytes: 87714, note: Not saved (gitignored class of file).}
+  - {path: /server.json, status: 200, bytes: 847, note: MCP registry server.json (io.github.ogasurfproject-jpg/horizon-shield 1.0.9, remote https://mcp.horizonshield.dev).}
+  - {path: /server-webmcp.json, status: 200, bytes: 666}
+  - {path: /gemini-extension.json, status: 200, bytes: 412}
+  - {path: /CITATION.cff, status: 200, bytes: 1841}
+  - {path: /robots.txt, status: 200, bytes: 474, note: 'Allow: / for *, and explicit Allow: / groups for GPTBot, ChatGPT-User, OAI-SearchBot, ClaudeBot, Claude-Web, PerplexityBot, Google-Extended, Applebot and others — AI crawlers deliberately welcomed.'}
+  - {path: /sitemap.xml, status: 200, bytes: 25924}
+  - {path: /openapi.json, status: 404}
+  - {path: /.well-known/horizonshield-negative-control-7e2a91.json, status: 404, control: negative}
+- host: www.the-horizons-innovation.com
+  role: Parent-company site (Wix); apex 301s here
+  documents:
+  - {path: /.well-known/security.txt, status: 400, note: Wix returns a 400 HTML page for every unknown path.}
+  - {path: /.well-known/openid-configuration, status: 400}
+  - {path: /.well-known/oauth-authorization-server, status: 400}
+  - {path: /.well-known/oauth-protected-resource, status: 400}
+  - {path: /.well-known/api-catalog, status: 400}
+  - {path: /.well-known/ai-plugin.json, status: 400}
+  - {path: /.well-known/agent-card.json, status: 400}
+  - {path: /.well-known/agent.json, status: 400}
+  - {path: /.well-known/apis.json, status: 400}
+  - {path: /apis.json, status: 400}
+  - {path: /llms.txt, status: 200, bytes: 4595, note: Wix-generated llms.txt for the parent company (RenonoeR/MUGAWAY renovation business); not this product.}
+  - {path: /robots.txt, status: 200}
+  - {path: /sitemap.xml, status: 200}

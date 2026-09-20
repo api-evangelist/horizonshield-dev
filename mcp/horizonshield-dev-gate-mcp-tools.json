@@ -1,0 +1,298 @@
+{
+  "jsonrpc": "2.0",
+  "id": 1,
+  "result": {
+    "tools": [
+      {
+        "name": "get_conditions",
+        "outputSchema": {
+          "type": "object",
+          "description": "Deterministic. Takes no arguments, looks nothing up, and returns the same document every time. It therefore declares no read-state field, and a structural probe will score it as unable to hold the difference between a failed read and an empty one. That score is correct and is left standing: this tool has no read to fail. Adding a state field it can never use would make the number look better and mean less.",
+          "properties": {
+            "conditions": {
+              "type": [
+                "array",
+                "object"
+              ]
+            },
+            "not_verified": {
+              "type": [
+                "array",
+                "object",
+                "string"
+              ]
+            },
+            "tiers": {
+              "type": [
+                "array",
+                "object"
+              ]
+            }
+          },
+          "additionalProperties": true
+        },
+        "title": "Get the conformance conditions",
+        "annotations": {
+          "title": "Get the conformance conditions",
+          "readOnlyHint": true,
+          "destructiveHint": false,
+          "idempotentHint": true,
+          "openWorldHint": false
+        },
+        "description": "Return the five conditions this gate measures, what it explicitly does not verify, and the tier definitions. Takes no arguments and returns identical output every time. Read this before running a check so you know what a verdict does and does not claim.",
+        "inputSchema": {
+          "type": "object",
+          "properties": {},
+          "additionalProperties": false
+        }
+      },
+      {
+        "name": "check_conformance",
+        "outputSchema": {
+          "type": "object",
+          "properties": {
+            "endpoint": {
+              "type": "string"
+            },
+            "reachable": {
+              "description": "Three-valued on purpose (gate58). true = measured and answered. false = measured and did not answer. null = NOT MEASURED. null is never to be read as a failing endpoint; it means this gate has nothing to say."
+            },
+            "pass": {
+              "type": [
+                "boolean",
+                "null"
+              ]
+            },
+            "conditions": {
+              "type": [
+                "array",
+                "object"
+              ]
+            },
+            "record_sha256": {
+              "type": "string",
+              "description": "Hash of this verdict with record_sha256 and recompute_note removed. Recompute it yourself; verify_verdict does the same arithmetic."
+            },
+            "recompute_note": {
+              "type": "string"
+            }
+          },
+          "additionalProperties": true
+        },
+        "title": "Check an MCP server for conformance and disclosure",
+        "annotations": {
+          "title": "Check an MCP server for conformance and disclosure",
+          "readOnlyHint": true,
+          "destructiveHint": false,
+          "idempotentHint": false,
+          "openWorldHint": true
+        },
+        "description": "Measure a public MCP endpoint against five conditions: it speaks MCP, it publishes an A2A agent card, it declares who pays it, identical input returns identical output, and the verdict itself can be recomputed by anyone. Free, no key. Conformance and disclosure only; this says nothing about whether any figure the checked server returns is correct. By default no tool on the checked server is called, so determinism comes back as not measured rather than guessed. Set allow_tool_call true only for a server you control.",
+        "inputSchema": {
+          "type": "object",
+          "properties": {
+            "endpoint": {
+              "type": "string",
+              "description": "https URL of the MCP endpoint to measure"
+            },
+            "allow_tool_call": {
+              "type": "boolean",
+              "description": "Consent to executing one tool on the checked server, twice, with empty arguments. Only set this for a server you own. Default false."
+            }
+          },
+          "required": [
+            "endpoint"
+          ],
+          "additionalProperties": false
+        }
+      },
+      {
+        "name": "verify_verdict",
+        "outputSchema": {
+          "type": "object",
+          "properties": {
+            "verified": {
+              "type": [
+                "boolean",
+                "null"
+              ],
+              "description": "true = the verdict hashes to its own record_sha256, so it was not altered after issue. false = it was altered. This is a finding about the record, not an error."
+            },
+            "method": {
+              "type": "string"
+            },
+            "note": {
+              "type": "string"
+            }
+          },
+          "additionalProperties": true
+        },
+        "title": "Recompute a verdict hash without trusting the issuer",
+        "annotations": {
+          "title": "Recompute a verdict hash without trusting the issuer",
+          "readOnlyHint": true,
+          "destructiveHint": false,
+          "idempotentHint": true,
+          "openWorldHint": false
+        },
+        "description": "Take a verdict this gate issued and recompute its record_sha256 independently. Removes record_sha256 and recompute_note, serialises the remainder in key order, and hashes it. Returns whether the verdict was altered after it was issued. You do not have to trust the party that issued the verdict, including this one.",
+        "inputSchema": {
+          "type": "object",
+          "properties": {
+            "record": {
+              "type": "object",
+              "description": "The full verdict object as returned by check_conformance or GET /self"
+            }
+          },
+          "required": [
+            "record"
+          ],
+          "additionalProperties": false
+        }
+      },
+      {
+        "name": "lookup_server",
+        "outputSchema": {
+          "type": "object",
+          "properties": {
+            "endpoint": {
+              "type": "string"
+            },
+            "on_register": {
+              "type": "boolean",
+              "description": "true = this endpoint is on the register. false = the register was READ and this endpoint is not on it. If the register could not be read at all, this field is not returned: the call comes back as a tool error (isError), because absence and not-knowing are different answers."
+            },
+            "register_size": {
+              "type": "number"
+            },
+            "standing": {
+              "type": [
+                "string",
+                "null"
+              ]
+            },
+            "latest": {
+              "type": [
+                "object",
+                "null"
+              ]
+            },
+            "means": {
+              "type": [
+                "string",
+                "object"
+              ]
+            },
+            "does_not_mean": {
+              "type": [
+                "string",
+                "object"
+              ]
+            }
+          },
+          "additionalProperties": true
+        },
+        "title": "Look up an MCP server on this register",
+        "annotations": {
+          "title": "Look up an MCP server on this register",
+          "readOnlyHint": true,
+          "destructiveHint": false,
+          "idempotentHint": true,
+          "openWorldHint": false
+        },
+        "description": "Look up what this register already holds about an MCP endpoint: whether it is watched, how often it is re-measured, how many measurements exist, when the first and latest were taken, and the latest verdict with the record_sha256 you can recompute yourself. Reads stored measurements only. It contacts nothing and measures nothing, so use check_conformance for a fresh reading. An endpoint that is absent is reported as absent and that is NOT a negative verdict: it means nobody has measured it here, not that it failed.",
+        "inputSchema": {
+          "type": "object",
+          "properties": {
+            "endpoint": {
+              "type": "string",
+              "description": "https URL of the MCP endpoint to look up, exactly as it appears on the register"
+            }
+          },
+          "required": [
+            "endpoint"
+          ],
+          "additionalProperties": false
+        }
+      },
+      {
+        "name": "is_verified",
+        "outputSchema": {
+          "type": "object",
+          "description": "A one-glance answer for an agent deciding whether to trust an MCP endpoint BEFORE connecting. Reads the register only; measures nothing. verified is true ONLY when the latest scheduled measurement passed every measured condition; it is null in every other case (pending, held, watched, absent), and never false, because this gate calls nothing a failure. The state enum says which case it is, so a consumer can tell 'not verified here' apart from 'the lookup failed' (that returns as a tool error, isError) and from 'measured and passing'.",
+          "properties": {
+            "endpoint": {
+              "type": "string"
+            },
+            "verified": {
+              "type": [
+                "boolean",
+                "null"
+              ],
+              "description": "true = latest measurement passed all measured conditions. null = not established here (see state). Never false: unmeasured or not-yet-passing is not a failure."
+            },
+            "state": {
+              "type": "string",
+              "enum": [
+                "verified",
+                "pending",
+                "held",
+                "watched",
+                "absent"
+              ],
+              "description": "verified = passed all measured conditions. pending = measured but not passing every one (often only because determinism needs the owner's consent). held = could not be reached. watched = on the list, not yet measured. absent = no row here at all."
+            },
+            "on_register": {
+              "type": "boolean"
+            },
+            "measured_at": {
+              "type": [
+                "string",
+                "null"
+              ]
+            },
+            "record_sha256": {
+              "type": [
+                "string",
+                "null"
+              ],
+              "description": "Hash of the latest verdict. Recompute it via recompute_url; no trust in this gate required."
+            },
+            "recompute_url": {
+              "type": "string"
+            },
+            "conditions": {
+              "type": [
+                "object",
+                "null"
+              ]
+            }
+          },
+          "additionalProperties": true
+        },
+        "title": "One glance: is this MCP server verified, with proof",
+        "annotations": {
+          "title": "One glance: is this MCP server verified, with proof",
+          "readOnlyHint": true,
+          "destructiveHint": false,
+          "idempotentHint": true,
+          "openWorldHint": false
+        },
+        "description": "A single machine-first answer for an agent deciding whether to trust an MCP endpoint BEFORE it connects. Returns verified (true only when the latest scheduled measurement passed every measured condition; null otherwise, never false), a state enum saying which case it is, measured_at, and a record_sha256 with a recompute_url so you can check the verdict without trusting this gate. Reads the stored register only: it contacts nothing and measures nothing. Absent and pending are reported honestly and are NOT negative verdicts. For a fresh measurement rather than the stored one, use check_conformance.",
+        "inputSchema": {
+          "type": "object",
+          "properties": {
+            "endpoint": {
+              "type": "string",
+              "description": "https URL of the MCP endpoint to look up, exactly as it appears on the register"
+            }
+          },
+          "required": [
+            "endpoint"
+          ],
+          "additionalProperties": false
+        }
+      }
+    ]
+  }
+}

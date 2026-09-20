@@ -1,0 +1,72 @@
+generated: '2026-09-19'
+method: searched
+source: https://mcp.horizonshield.dev/.well-known/verification-contract.json
+docs:
+- https://gate.horizonshield.dev/changes
+- https://gate.horizonshield.dev/feed.xml
+- https://ledger.horizonshield.dev/ledger
+- https://github.com/ogasurfproject-jpg/horizon-shield
+scheme: per-service semver; the verification contract carries an inline, reasoned changelog; deployments are dated by ledger entries
+current_version:
+  kira_mcp_server: 1.0.9
+  verification_contract: '0.3'
+  gate: 0.4.7
+summary: >-
+  There is no single product changelog page. Three dated, machine-readable sources stand in for one: the
+  verification contract's own changelog object (why each contract version changed and who prompted it), the gate's
+  /changes state feed (with an Atom twin at /feed.xml), and the JIDEC ledger, whose entries timestamp each spec or
+  fix to a Bitcoin block. The GitHub repository (2,829 files, pushed 2026-09-20) keeps dated FIX_*.md and ops/*.md
+  notes but publishes no releases or tags (GitHub API rate-limited at probe time; tree read showed none).
+entries:
+- version: verification contract 0.3
+  date: null
+  type: behaviour change (verifier side only)
+  breaking: false
+  highlights:
+  - 'result gains a third value, partial: a check that was available but not requested no longer rounds up to verified.'
+  - signed_payload format unchanged from 0.2; claims issued today still carry contract 0.2 and recompute identically.
+  - Prompted by Federico Blanco Sanchez-Llanos (credited in the document).
+  source: https://mcp.horizonshield.dev/.well-known/verification-contract.json
+- version: verification contract 0.2
+  date: null
+  type: hashed-payload change
+  breaking: false
+  highlights:
+  - 'contract and ruleset {id, version} folded INTO signed_payload (hashed), preventing silent reinterpretation of old claims under a newer ruleset.'
+  - Claims issued under 0.1.1 remain verifiable; verifiers report folded_into_hash false for them.
+  source: https://mcp.horizonshield.dev/.well-known/verification-contract.json
+- version: verification contract 0.1.1
+  date: null
+  type: initial
+  highlights: [ruleset identity as metadata alongside claim_sha256 (outside the hash).]
+- version: hs-ledger (nenrin-resume-v1)
+  date: '2026-09-18'
+  type: addition
+  highlights: ['nenrin-resume-v1 spec deployed (hs-ledger 9f8b46c2), anchored as JIDEC ledger entry 49, Bitcoin block 967603.']
+  source: https://ledger.horizonshield.dev/ledger
+- version: ledger witness intake automation
+  date: '2026-09-05'
+  type: operational change
+  highlights: ['Witness pool is now bundled into a nenrin-witness-batch-v1 entry once a day at 00:30 UTC; until 2026-09-05 this was a manual step ("two records waited 18 days").']
+  source: https://ledger.horizonshield.dev/witness
+- version: mcp-conduct 0.1.1 (npm)
+  date: '2026-09-05'
+  type: release
+  highlights: [First public release of the JS client for the gate (0.1.0 on 2026-09-04, 0.1.1 the next day).]
+  source: https://registry.npmjs.org/mcp-conduct
+- version: gate self-verification
+  date: '2026-08-23'
+  type: milestone
+  highlights: ['The verify-directory page states the checker "is on its own list, and did not pass it until 2026-08-23".']
+  source: https://shield.the-horizons-innovation.com/verify-directory/
+- version: KIRA MCP host — legacy SSE path retired
+  date: '2026-08-14'
+  type: retirement
+  breaking: true
+  highlights: ['GET /sse stopped answering 200 with metadata (which made SSE clients reconnect in a loop) and now returns 405 sse_not_supported naming the Streamable HTTP endpoint.']
+  source: https://mcp.horizonshield.dev/sse
+- version: gate register begins
+  date: '2026-08-08'
+  type: operational
+  highlights: [First entries in the /changes feed (status transitions for hs-mcp and hs-hearing workers.dev endpoints).]
+  source: https://gate.horizonshield.dev/changes

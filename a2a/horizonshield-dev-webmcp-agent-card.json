@@ -1,0 +1,82 @@
+{
+  "capabilities": {
+    "streaming": false,
+    "pushNotifications": false,
+    "extensions": [
+      {
+        "uri": "https://gate.horizonshield.dev/ext/conduct/v1",
+        "description": "Who pays this agent, where its measured conduct record lives, and where to file a witness walk. The specification is served at the URI.",
+        "required": false,
+        "params": {
+          "compensation": {
+            "paid_by": "buyer",
+            "referral_fee": false,
+            "listing_fee": false,
+            "success_fee_pct": 0,
+            "disclosure_url": "https://shield.the-horizons-innovation.com/verify-directory/"
+          },
+          "measured_endpoints": [
+            "https://web.horizonshield.dev/mcp"
+          ],
+          "conduct_record": "https://gate.horizonshield.dev/history?endpoint=https%3A%2F%2Fweb.horizonshield.dev%2Fmcp",
+          "verdict_recipe": "https://gate.horizonshield.dev/spec",
+          "witness_intake": "https://ledger.horizonshield.dev/witness",
+          "register": "https://gate.horizonshield.dev/register",
+          "rings": {
+            "spec": "https://github.com/ogasurfproject-jpg/horizon-shield/blob/main/workers/hs-ledger/nenrin/NENRIN_SPEC_v1.md",
+            "spec_sha256": "9ccba2e325fd2a555fcdb2dec519b8c6bf7a669064674846aea98ecfff824e3d",
+            "base": "https://raw.githubusercontent.com/ogasurfproject-jpg/mcp-conduct-register/main/rings/",
+            "path": "<slug>/<YYYY-MM>.json",
+            "slug": "endpoint URL without https://, lower case, every run of characters outside [a-z0-9] replaced by one hyphen, hyphens trimmed at both ends",
+            "ledger": "https://ledger.horizonshield.dev/ledger"
+          }
+        }
+      }
+    ]
+  },
+  "protocol": "A2A (Agent2Agent)",
+  "name": "HORIZON SHIELD: Construction Estimate Auditor for Japan (KIRA)",
+  "provider": "The HORIZONs株式会社",
+  "description": "Check whether a Japanese construction or renovation quote is fair. A neutral, independent third-party estimate-integrity desk: audits a homeowner's quote against an open 95,403-item construction-cost database (JCCDB), flags known overcharge tactics with primary sources, and drafts awareness content. Verifiable first-party prices only (SHA-256); no referral fees; no auto-posting.",
+  "compensation": {
+    "paid_by": "buyer",
+    "referral_fee": false,
+    "listing_fee": false,
+    "success_fee_pct": 0,
+    "disclosure_url": "https://shield.the-horizons-innovation.com/verify-directory/"
+  },
+  "version": "1.0.4",
+  "role": "集客窓口(外部エージェント/LLM向けの入口)。受けた見積もり相談を内部KIRA(hs-mcp)の適正診断へ橋渡しする。",
+  "skills": [
+    {
+      "id": "route_request",
+      "note": "**まずここ。**一文を渡せば、診断・台帳検証・手口・加盟店探索の正しい窓口へ決定的に振り分ける。返り値に検証URLと『証明していないこと』が必ず入る。"
+    },
+    {
+      "id": "run_full_audit",
+      "note": "診断+手口+発信下書きを一気通貫で返す司令塔。価格は一次データのみ・自動投稿なし。"
+    },
+    {
+      "id": "intake_estimate",
+      "note": "施主の見積もりを受け、KIRA適正診断とEHN(無料の第三者チェック)へ橋渡し。"
+    },
+    {
+      "id": "scan_tactics",
+      "note": "工事別の過剰請求の手口(検証済み)と一次ソースの在処を返す注意喚起。"
+    },
+    {
+      "id": "draft_broadcast",
+      "note": "注意喚起の発信下書き(note/X)と解説ページへの被リンクを生成。自動投稿しない。"
+    }
+  ],
+  "bridges_to": {
+    "internal_mcp": "https://mcp.horizonshield.dev",
+    "internal_agent_card": "https://mcp.horizonshield.dev/.well-known/agent-card.json",
+    "verification_ledger": "https://hs-ledger.oga-surf-project.workers.dev",
+    "ledger_index": "https://hs-ledger.oga-surf-project.workers.dev/ledger",
+    "ledger_llms_txt": "https://hs-ledger.oga-surf-project.workers.dev/llms.txt",
+    "note": "検証したい記録があるなら ask に ref を渡せばここへ繋がる。著者を信頼せずに確かめられる。"
+  },
+  "how_to_connect": "MCPクライアントは POST /mcp に JSON-RPC(initialize/tools|resources|prompts/*)。A2A対応エージェントはこのカードで窓口を発見できる。",
+  "site": "https://shield.the-horizons-innovation.com"
+}

@@ -1,0 +1,99 @@
+generated: '2026-09-19'
+method: derived
+source: mcp/horizonshield-dev-mcp-tools.json (outputSchemas) + well-known/horizonshield-dev-verification-contract.json + live GET https://ledger.horizonshield.dev/ledger, /witness, /agreement + https://gate.horizonshield.dev/register, /watchlist, /history
+derived_from: openapi/horizonshield-dev-mcp-conduct-register-openapi.json
+summary: >-
+  The OpenAPI declares no component schemas, so the entity graph is derived from documents the servers actually
+  return and from the tool outputSchemas. The model is a verification chain: a price Verdict is issued with a
+  content-addressed Claim (claim_sha256 over signed_payload); Claims and specs become Ledger Entries anchored to
+  Bitcoin; the Gate measures MCP Endpoints into Verdict Records (record_sha256) that accumulate in an Endpoint
+  History; Witnesses file Walks that bundle into daily Ledger Entries and monthly Rings. Identifiers are SHA-256
+  hex digests throughout; the only sequential id is the ledger entry number n.
+entities:
+- name: CostCategory
+  source: list_cost_categories / search_cost_category outputSchema
+  fields: [name, 'fair_range {min, avg, max}', danger_threshold, 'region multipliers (via get_fair_price_sources)']
+  note: 61 maintained categories; JCCDB (95,403 items) is the open item catalogue behind them and holds no prices.
+- name: Verdict
+  source: audit_estimate outputSchema
+  fields: [verdict, 'level (ok|watch|alert)', 'fair_range {min, avg, max}', danger_threshold, vs_avg_pct, advice, source, 'provenance {dataset version, curator, sources}', 'next_calls[]', 'next_actions[]', 'normalized_from?', 'did_you_mean?']
+- name: Claim (fair-price receipt)
+  source: verify_fair_price / verify_integrity_claim + verification-contract.json
+  id: claim_sha256 = SHA-256(signed_payload)
+  fields: ['signed_payload {skill, contract, ruleset {id, version}, input_text, red_flags, issued_at, expires_at (= issued_at + 365 days), estimate_version (first 8 hex of SHA-256(input_text))}', claim_sha256, verify_url]
+  read_at: 'https://mcp.horizonshield.dev/ledger/{claim_sha256}; https://shield.the-horizons-innovation.com/verify/?id={claim_sha256}'
+- name: VerificationResult
+  source: verify_integrity_claim outputSchema / verification-contract.json failure_model
+  fields:
+  - 'result (verified|partial|unverified)'
+  - 'failure_reason (stale_data|changed_scope|missing_evidence)'
+  - 'trigger'
+  - 'recomputed_sha256'
+  - 'scope_check'
+  - 'audit_ruleset_recheck (always not_performed)'
+  - 'skipped_because_not_requested[]'
+- name: FairPriceAttestation
+  source: create_ap2_fairness_attestation description
+  fields:
+  - 'work'
+  - 'quoted_price?'
+  - 'merchant?'
+  - 'fairness judgement (within|above|below)'
+  - 'claim_sha256'
+  - 'verify_url'
+  note: Shaped to attach to an AP2 Cart Mandate; each issuance appends a LedgerEntry.
+- name: LedgerEntry (JIDEC)
+  source: GET https://ledger.horizonshield.dev/ledger
+  id: n (sequential) and claim_sha256 (content address)
+  fields: [n, work, claim_sha256, ots_status (confirmed|pending), pending_stage, pending_hours, bitcoin_block, url]
+  routes: ['/ledger/{n}', '/ledger/{n}/ots', '/ledger/{n}?format=raw', '/verify/{n}', '/cite/{citation}']
+- name: VerificationPath
+  source: GET /paths; jidec_list_paths / jidec_replay
+  id: sha (jidec-path-v1)
+  fields: [purpose, verdict, anchoring status, replay drift (MATCH | drift)]
+- name: WitnessWalk
+  source: GET https://ledger.horizonshield.dev/witness; conduct-witness skill
+  fields:
+  - 'origin'
+  - 'mode (a2a|mcp)'
+  - 'witness name'
+  - 'vantage'
+  - 'assertions[] (pass|FAIL|n/a) ''n/5'''
+  - 'record sha256'
+  - 'a2a.task.id? (when --bind-task)'
+  - 'witness_sig'
+  - 'edge_sig'
+  lifecycle: pending pool -> nenrin-witness-batch-v1 LedgerEntry (daily 00:30 UTC) -> monthly Ring
+- name: Ring (NENRIN)
+  source: card extensions[].params.rings
+  fields: [slug (endpoint URL normalised), 'YYYY-MM', hash of previous ring, Bitcoin timestamp]
+  read_at: 'https://raw.githubusercontent.com/ogasurfproject-jpg/mcp-conduct-register/main/rings/<slug>/<YYYY-MM>.json'
+- name: RegisterRow / MeasuredEndpoint (gate)
+  source: GET https://gate.horizonshield.dev/register, /watchlist
+  id: endpoint (https URL)
+  fields: [endpoint, status (verified|pending|held|watched), operator_label, tier, cadence (daily…), requested_by, notified, owner_declined]
+- name: VerdictRecord (gate)
+  source: GET /history?endpoint=…; verify_verdict tool
+  id: record_sha256
+  fields: ['at, status, reachable, conditions {mcp_endpoint, agent_card, compensation_declared, determinism, recomputable} each {pass, measured, reason}', unreachable_streak, gate_commit, probed_via]
+- name: AgreementRecord (a2a-agreement-v1.1)
+  source: GET https://ledger.horizonshield.dev/agreement; README
+  fields: [canonical bytes of terms, two signatures (party A, party B), counterparty conduct record pins (sha256), refusal codes]
+  note: 'No custody, no matching, no editorial step; a fee that varies with amount or outcome is refused by name.'
+relationships:
+- {from: Verdict, to: Claim, type: has_one, via: claim_sha256 (when verify_fair_price is used)}
+- {from: Claim, to: LedgerEntry, type: belongs_to, via: claim_sha256}
+- {from: FairPriceAttestation, to: LedgerEntry, type: has_one, via: claim_sha256}
+- {from: LedgerEntry, to: VerificationPath, type: has_many, via: jidec-path-v1 sha}
+- {from: WitnessWalk, to: LedgerEntry, type: belongs_to, via: daily batch entry}
+- {from: WitnessWalk, to: Ring, type: belongs_to, via: month + endpoint slug}
+- {from: MeasuredEndpoint, to: VerdictRecord, type: has_many, via: endpoint}
+- {from: VerdictRecord, to: Ring, type: belongs_to, via: endpoint slug + YYYY-MM}
+- {from: AgreementRecord, to: VerdictRecord, type: has_many, via: pinned counterparty conduct sha256}
+- {from: CostCategory, to: Verdict, type: has_many, via: work name match}
+identifiers:
+  claim_sha256: 64-hex SHA-256 of the raw signed_payload string
+  record_sha256: 64-hex SHA-256 of a gate verdict with record_sha256 and recompute_note removed
+  estimate_version: first 8 hex of SHA-256(input_text)
+  citation: 'jidec:entry:<n> | jidec:path:<sha> | bare 64-hex | ledger URL'
+  endpoint_slug: 'endpoint URL without https://, lower case, non-[a-z0-9] runs -> one hyphen, trimmed'

@@ -1,0 +1,85 @@
+# HORIZON SHIELD / JIDEC
+
+> A Bitcoin-anchored, append-only public ledger of construction-estimate audit
+> claims. Its purpose is that you do NOT have to trust HORIZON SHIELD: every
+> published result can be re-derived from bytes you fetch and hash yourself.
+
+If you were sent here to verify something, do this in order.
+
+## 1. Resolve the citation
+
+`GET https://ledger.horizonshield.dev/cite/jidec:entry:5`
+
+Accepts `jidec:entry:<n>`, `jidec:path:<sha>`, a bare 64-hex id, or a ledger
+URL. Returns the resolved entry, the claimed id, the id recomputed from the
+stored bytes, whether they match, and the Bitcoin anchoring status.
+Add `Accept: text/markdown` for prose instead of JSON.
+
+## 2. Check the hash yourself instead of believing step 1
+
+```
+curl -s "https://ledger.horizonshield.dev/ledger/5?format=raw" | shasum -a 256
+```
+
+The output must equal the cited id. If it does not, the citation is bad and
+nothing else on this site matters.
+
+Hash exactly what you receive. The raw route serves the anchored bytes verbatim;
+there is no canonicalisation step to apply and none to guess. If something in the
+middle re-indents or re-encodes the response first, a browser view, a markdown
+converter, a summarising fetch tool, the digest will not match, and the mismatch
+is that intermediary, not the ledger. Pipe curl straight into your hash tool.
+
+## 3. Check the timestamp
+
+```
+curl -s "https://ledger.horizonshield.dev/ledger/5/ots" > claim_5.txt.ots
+ots info claim_5.txt.ots
+```
+
+Or drop the two files into https://opentimestamps.org. A `pending` status is
+honest, not a failure: Bitcoin confirmation takes hours.
+
+## 4. Reproduce the audit itself
+
+`GET https://ledger.horizonshield.dev/verify/{n}` returns a recipe for any entry.
+
+For an entry that declares a `jidec-claim-v1` audit it is a seven-step recipe:
+which bytes to fetch, which reference bundle is pinned, which algorithm commit to
+check out, and what each recomputed hash must equal. If all seven match, the
+result is the deterministic output of the declared inputs.
+
+For every other entry, specifications, source witnesses, correction notices, it
+is a three-step byte-level recipe: fetch, hash, check the timestamp. That is less
+than a full audit reproduction, and the route says so rather than pretending
+otherwise. Either way our assertion is not needed.
+
+## Endpoints
+
+- https://ledger.horizonshield.dev/health, service descriptor
+- https://ledger.horizonshield.dev/ledger, index of anchored entries
+- https://ledger.horizonshield.dev/paths, anchored verification paths (jidec-path-v1)
+- https://ledger.horizonshield.dev/cite/{citation}, resolve and verify any citation
+- https://ledger.horizonshield.dev/verify/{n}, executable verification recipe
+- https://ledger.horizonshield.dev/paths/{sha}/replay, re-observe an anchored path and report drift
+- https://ledger.horizonshield.dev/.well-known/api-catalog, RFC 9727 catalog of the above
+- https://jidec.horizonshield.dev/mcp, Model Context Protocol endpoint (read-only tools)
+
+## What this proves, and what it does not
+
+Proves: these exact bytes existed at or before the anchored time, and have not
+changed since.
+
+Does not prove: that an estimate is fair, that the input data is true, that the
+reference prices are correct, or that HORIZON SHIELD is competent. Those are
+judged by re-running the recipe, not by reading this file.
+
+## Known limits, stated here so you do not have to find them
+
+- OpenTimestamps has no RFC, no ISO and no eIDAS standing. For institutional
+  audit, ask additionally for an RFC 3161 or eIDAS qualified timestamp.
+- This is a SCITT-shaped service (RFC 9943 vocabulary) but not a conformant
+  one: statements are canonical JSON, not COSE_Sign1, and receipts are
+  OpenTimestamps proofs, not RFC 9942 COSE receipts.
+- Entry #1 predates the v1 schema and is a concept proof only.
+- The public ledger index covers the most recent 100 entries.

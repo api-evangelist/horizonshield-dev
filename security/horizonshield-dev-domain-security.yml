@@ -1,0 +1,31 @@
+generated: '2026-09-19'
+method: probed
+source: live DNS/TLS/HTTP probes of apis.yml + OpenAPI hosts
+hosts:
+- host: shield.the-horizons-innovation.com
+  https: true
+  tls_version: TLSv1.3
+  cert_expires: Oct 22 05:06:19 2026 GMT
+  hsts: false
+- host: mcp.horizonshield.dev
+  https: true
+  tls_version: TLSv1.3
+  cert_expires: Nov  7 00:43:44 2026 GMT
+  hsts: null
+- host: gate.horizonshield.dev
+  https: true
+  tls_version: TLSv1.3
+  cert_expires: Nov  7 00:43:44 2026 GMT
+  hsts: null
+domains:
+- domain: the-horizons-innovation.com
+  dnssec: false
+  caa: []
+  spf: false
+  dmarc: true
+  dmarc_policy: none
+- domain: horizonshield.dev
+  dnssec: false
+  caa: []
+  spf: false
+  dmarc: false

@@ -64,5 +64,10 @@
 > Full detail: **[Where this data comes from](https://apievangelist.com/about/where-our-data-comes-from)**
 <!-- API-EVANGELIST-PROVENANCE:END -->
 
-The HORIZ音s株式会社 is a company surfaced via the API Evangelist harvest backlog (source: a2a-registry) and added to the network as a stub for full-pipeline profiling.
-- https://horizonshield.dev/
+The HORIZ音s株式会社 (The HORIZONs Co., Ltd., Hiratsuka, Japan) operates HORIZON SHIELD, a buyer-side, agent-native fair-price verification service for Japanese construction and renovation estimates. Its KIRA server at `mcp.horizonshield.dev` is a free, anonymous remote MCP server and A2A agent that audits quoted prices against the open JCCDB dataset and issues SHA-256 receipts anchored to Bitcoin; around it sit the MCP Verification Gate (OpenAPI + MCP + A2A), the JIDEC verification ledger (RFC 9727 api-catalog, security.txt, llms.txt), the Yakumo verified-contractor MCP, a WebMCP intake server and a femtech source registry. The registrable domain `horizonshield.dev` itself has no address record — every surface lives on a subdomain and the company website is https://shield.the-horizons-innovation.com/.
+
+- Website: https://shield.the-horizons-innovation.com/
+- Source: https://github.com/ogasurfproject-jpg/horizon-shield
+- KIRA MCP / A2A: https://mcp.horizonshield.dev/ (agent card at `/.well-known/agent-card.json`)
+- MCP Verification Gate OpenAPI: https://gate.horizonshield.dev/openapi.json
+- JIDEC ledger api-catalog: https://ledger.horizonshield.dev/.well-known/api-catalog

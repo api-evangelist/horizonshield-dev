@@ -1,0 +1,94 @@
+generated: '2026-09-19'
+method: derived
+source: mcp/horizonshield-dev-gate-mcp-tools.json + mcp/horizonshield-dev-mcp-tools.json + mcp/horizonshield-dev-jidec-mcp-tools.json
+openapi: openapi/horizonshield-dev-mcp-conduct-register-openapi.json
+summary: >-
+  The only OpenAPI in the family describes the MCP Verification Gate (gate.horizonshield.dev, 25 operations, none
+  with an operationId — rows below bind by METHOD PATH). The gate's own five MCP tools map cleanly onto it. The
+  flagship KIRA server (15 tools) and the JIDEC ledger server (4 tools) have NO OpenAPI: their REST-shaped
+  neighbours are the ledger's RFC 9727 api-catalog routes and KIRA's /ledger/{claim_sha256}, which are documented
+  as links, not as a contract, so those tools are recorded as mcp_only with the route they visibly correspond to.
+  Nothing here was invented: every tool name comes from a live tools/list and every path from the served spec or
+  the served api-catalog / route list.
+surfaces:
+  openapi: {file: openapi/horizonshield-dev-mcp-conduct-register-openapi.json, url: 'https://gate.horizonshield.dev/openapi.json', gated: false}
+  mcp:
+  - {id: gate, url: 'https://gate.horizonshield.dev/mcp', tools_list: open}
+  - {id: kira, url: 'https://mcp.horizonshield.dev/', tools_list: open}
+  - {id: jidec, url: 'https://jidec.horizonshield.dev/mcp', tools_list: open}
+  graphql: null
+  api_catalog: {file: well-known/horizonshield-dev-api-catalog.json, url: 'https://ledger.horizonshield.dev/.well-known/api-catalog', note: RFC 9727 linkset naming the JIDEC routes; not an OpenAPI}
+crosswalk:
+- tool: get_conditions
+  server: gate
+  category: register-metadata
+  rest: ['GET /spec']
+  binding: rest
+  confidence: high
+  note: Tool description "Return the five conditions this gate measures, what it explicitly does not verify, and the tier definitions" is the /spec document ("The five conditions, stated in full").
+- tool: check_conformance
+  server: gate
+  category: measurement
+  rest: ['POST /check']
+  binding: rest
+  confidence: high
+  note: 'Both take an MCP endpoint URL and run a measurement now; the REST body is {"endpoint": "...", "allow_tool_call": bool}. The tool inherits that requestBody as its real input contract (inputSchema requires endpoint).'
+- tool: verify_verdict
+  server: gate
+  category: verification
+  rest: ['POST /recompute']
+  binding: rest
+  confidence: medium
+  note: The tool recomputes record_sha256 of a verdict; /recompute "works out which canonicalization reproduces a claimed hash". Same purpose, the REST form is broader (any claimed hash), so medium.
+- tool: lookup_server
+  server: gate
+  category: register-read
+  rest: ['GET /register/lookup', 'GET /history']
+  binding: rest
+  confidence: high
+  note: '"Look up what this register already holds about an MCP endpoint: whether it is watched, how often it is re-measured…" = /register/lookup?endpoint= (conduct-v1.1 section 7); past measurements are /history?endpoint=.'
+- tool: is_verified
+  server: gate
+  category: register-read
+  rest: ['GET /is-verified']
+  binding: rest
+  confidence: high
+  note: The gate's A2A skill text says the A2A answer is "the same bytes as GET /is-verified"; the tool is the MCP projection of the same read.
+mcp_only:
+- {tool: get_jccdb_dataset_info, server: kira, reason: No REST contract; dataset metadata is otherwise published at github.com/ogasurfproject-jpg/japan-construction-cost-database and Hugging Face.}
+- {tool: list_cost_categories, server: kira, reason: No REST contract for the souba-db price layer.}
+- {tool: search_cost_category, server: kira, reason: No REST contract.}
+- {tool: get_estimate_reading_guide, server: kira, reason: No REST contract.}
+- {tool: get_fair_price_sources, server: kira, reason: No REST contract.}
+- {tool: get_price_range, server: kira, reason: No REST contract; the same engine is embedded in the site's in-page check pages (llms.txt "Live cost-check pages").}
+- {tool: audit_estimate, server: kira, reason: No REST contract.}
+- {tool: preview_reverse_estimate, server: kira, reason: No REST contract.}
+- {tool: check_red_flags, server: kira, reason: No REST contract; also reachable as the A2A estimate-integrity-audit skill via message/send on the same URL.}
+- {tool: verify_fair_price, server: kira, reason: 'Issues a receipt that is then readable at GET https://mcp.horizonshield.dev/ledger/{claim_sha256} (a served route, not in any OpenAPI).'}
+- {tool: create_ap2_fairness_attestation, server: kira, reason: Appends a ledger record; no REST twin.}
+- {tool: suggest_ehn, server: kira, reason: Returns the EHN board URL.}
+- {tool: get_agent_card, server: kira, reason: 'Returns the URL of GET /.well-known/agent-card.json (served, and declared in the GATE''s spec for the gate host, not for mcp.).'}
+- {tool: verify_integrity_claim, server: kira, reason: Pure recomputation over caller-supplied bytes; the browser twin is https://shield.the-horizons-innovation.com/verify/ .}
+- {tool: find_verified_contractor, server: kira, reason: 'Fronts the Yakumo server (hearing.horizonshield.dev/mcp list_verified_stores); no REST contract.'}
+- {tool: jidec_cite, server: jidec, reason: 'Corresponds to GET https://ledger.horizonshield.dev/cite/{citation} in the api-catalog; no OpenAPI.'}
+- {tool: jidec_replay, server: jidec, reason: 'Corresponds to GET /paths/{sha}/replay (named in llms.txt and the root route list); no OpenAPI.'}
+- {tool: jidec_list_paths, server: jidec, reason: Corresponds to GET /paths; no OpenAPI.}
+- {tool: jidec_how_to_verify, server: jidec, reason: 'Corresponds to GET /verify/{n} ("executable verification recipe"); no OpenAPI.'}
+rest_only:
+- capability: register feeds and pages
+  operations: ['GET /register', 'GET /verified.json', 'GET /changes', 'GET /feed.xml', 'GET /sitemap.xml', 'GET /e/{host}{path}', 'GET /.well-known/mcp-register.json']
+- capability: badges and embeds
+  operations: ['GET /badge', 'GET /embed', 'GET /badge/seal']
+- capability: extension and self-measurement
+  operations: ['GET /ext/conduct/v1', 'GET /self', 'GET /health', 'GET /mould', 'GET /sweep/last', 'GET /nenrin/window', 'GET /watchlist']
+- capability: cryptographic verification
+  operations: ['POST /verify-event']
+- capability: discovery
+  operations: ['GET /.well-known/agent-card.json', 'POST /mcp']
+coverage:
+  tools_named: 24
+  tools_bound_to_rest: 5
+  mcp_only: 19
+  rest_operations_total: 25
+  rest_operations_with_tool: 6
+  note: 'Coverage is computed over the three servers whose tools are saved here plus the one OpenAPI; the WebMCP, Yakumo and femtech tool lists are saved in mcp/ but have no REST contract to cross to.'

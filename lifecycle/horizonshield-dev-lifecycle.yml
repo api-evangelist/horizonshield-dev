@@ -1,0 +1,70 @@
+generated: '2026-09-19'
+method: searched
+source: https://mcp.horizonshield.dev/.well-known/verification-contract.json
+derived_from: openapi/horizonshield-dev-mcp-conduct-register-openapi.json
+docs:
+- https://mcp.horizonshield.dev/sse
+- https://gate.horizonshield.dev/health
+- https://ledger.horizonshield.dev/ledger
+versioning:
+  scheme: per-service semantic versions carried in serverInfo / info.version / card version; unversioned paths
+  current:
+    kira_mcp_server: 1.0.9 (serverInfo; also the MCP registry entry and /health)
+    kira_agent_card: 1.0.0
+    verification_contract: '0.3 (signed_payload format unchanged since 0.2; claims issued today still carry contract 0.2)'
+    gate: 0.4.7 (OpenAPI info.version, /health gate_version, card version)
+    jidec_ledger_card: 1.1.0
+    webmcp: 1.0.4
+    yakumo: 2.3.1
+    femtech: 0.4.1
+    claude_plugin: 1.1.0
+    mcp_conduct_npm: 0.1.1
+  policy_published: false
+  note: >-
+    No versioning policy page. The verification contract is the one surface with an explicit compatibility rule:
+    from 0.2 the ruleset identity is folded INTO the hashed payload "so an old claim recomputes as what it was, under
+    the rules that made it", and claims issued under 0.1.1 are still verifiable with folded_into_hash: false. The gate
+    /health reports gate_commit "unpinned" for this deployment.
+deprecation:
+  policy_published: false
+  sunset_header: false
+  deprecation_header: false
+  rfc8594: false
+  deprecated_operations: []
+  documented_retirements:
+  - what: Legacy SSE transport at /sse on the KIRA MCP host
+    retired: '2026-08-14'
+    evidence: 'GET https://mcp.horizonshield.dev/sse -> 405 {"error":"sse_not_supported", "message":"… Until 2026-08-14 this path answered 200 with server metadata, which made SSE clients reconnect in a loop without ever surfacing an error. That was our bug, not yours.", "endpoint":"https://mcp.horizonshield.dev/"}'
+    note: A dated, in-band retirement notice with the replacement named; POST to /sse still works.
+  - what: verification contract 0.1.1 result semantics
+    superseded_by: '0.2 (ruleset folded into hash) and 0.3 (partial result value)'
+    evidence: >-
+      verification-contract.json changelog — 0.3 "Previously a call that omitted estimate_version returned result:
+      verified with scope_check: skipped … partial shares no prefix with verified, so naive string comparison now
+      fails closed."
+  note: No Deprecation pointer is emitted — these are documented retirements, not a policy.
+status_page:
+  url: null
+  probed:
+  - {url: 'https://shield.the-horizons-innovation.com/status/', status: 404}
+  live_signals:
+  - {url: 'https://mcp.horizonshield.dev/health', status: 200, observed: '{"ok":true,"server":{"name":"horizon-shield","version":"1.0.9"},"checked":{"worker":"running","kv":"reachable"},"not_checked":["data freshness","tool output correctness"],"note":"This reports only what it actually tested…"}'}
+  - {url: 'https://gate.horizonshield.dev/health', status: 200, observed: '{"ok":true,"gate_version":"0.4.7","gate_commit":"unpinned…"}'}
+  - {url: 'https://gate.horizonshield.dev/self', status: 200, note: 'The gate measured against its own five conditions; status "pending" at fetch time — the provider publishes its own failing measurements.'}
+  - {url: 'https://gate.horizonshield.dev/history?endpoint=https%3A%2F%2Fmcp.horizonshield.dev%2Fmcp', status: 200, note: 'Dated conduct history of the KIRA endpoint since 2026-08-14 (136 KB): a public, third-party-recomputable availability + conformance record, re-measured daily per /watchlist.'}
+  - {url: 'https://mcp.horizonshield.dev/.well-known/usage-stats.json', status: 200, note: Public per-day call counters back to 2026-08-22.}
+  note: >-
+    No incident-history status page, so no StatusPage pointer. What exists instead is stronger in one dimension and
+    weaker in another: every server has a /health that says what it did not check, and the gate keeps a daily,
+    hash-recomputable conduct record of every family endpoint — but there is no uptime commitment and no incident
+    communication channel.
+sla:
+  published: false
+  note: 'No uptime target. The consumer Terms of Service (https://shield.the-horizons-innovation.com/tos) carry refund windows for the human consulting products (full refund on cancellation before report delivery, processed within 7 business days; none after delivery), which is a commercial term, not an API SLA.'
+changelog:
+  published: true
+  artifact: changelog/horizonshield-dev-changelog.yml
+  sources:
+  - {url: 'https://mcp.horizonshield.dev/.well-known/verification-contract.json', field: changelog, note: 'Versioned entries 0.1.1 / 0.2 / 0.3 with the reason for each change and who prompted it.'}
+  - {url: 'https://gate.horizonshield.dev/changes', note: 'Dated state-change feed of the register (the operational log of measured endpoints), also as Atom at /feed.xml.'}
+  - {url: 'https://ledger.horizonshield.dev/ledger', note: 'Dated, Bitcoin-anchored entries record when specs and fixes were deployed (e.g. entry 49 "nenrin-resume-v1 spec (deployed 2026-09-18, hs-ledger 9f8b46c2)").'}

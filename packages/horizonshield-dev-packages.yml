@@ -1,0 +1,93 @@
+generated: '2026-09-19'
+method: searched
+source: https://registry.npmjs.org/mcp-conduct
+docs:
+- https://github.com/ogasurfproject-jpg/mcp-conduct
+- https://github.com/ogasurfproject-jpg/horizon-shield/blob/main/plugin/README.md
+- https://github.com/ogasurfproject-jpg/horizon-shield/tree/main/workers/hs-ledger/nenrin/a2a-conduct-walk
+package_count: 6
+official_count: 6
+summary: >-
+  One package sits in a public registry: mcp-conduct on npm (a zero-dependency Node client that consults the gate
+  before an MCP client connects). Everything else is distributed from GitHub — a Claude Code plugin marketplace, a
+  Python CLI + MCP server installed with uvx straight from the repo (declared in pyproject but not on PyPI), two
+  GitHub Actions, and a Gemini CLI extension manifest. Nothing was found under the names horizon-shield,
+  horizonshield or jccdb on npm or PyPI (both 404 / empty search). Every entry below is first-party: the author
+  fields name The HORIZONs Co., Ltd. and the repositories live under the founder's GitHub account.
+packages:
+- name: mcp-conduct
+  registry: npm
+  url: https://www.npmjs.com/package/mcp-conduct
+  repository: https://github.com/ogasurfproject-jpg/mcp-conduct
+  language: JavaScript
+  kind: client library (gate reader / connection policy guard for MCP SDK clients)
+  official: true
+  version: 0.1.1
+  published: '2026-09-05'
+  first_published: '2026-09-04'
+  license: MIT
+  author: The HORIZONs Co., Ltd.
+  homepage: https://gate.horizonshield.dev/spec
+  install: npm install mcp-conduct
+  note: 'Metadata read from registry.npmjs.org/mcp-conduct (dist-tags.latest 0.1.1, time["0.1.1"] 2026-09-05T00:32:49Z). Engines node >=18. Wraps an MCP SDK Client so the gate is consulted before connect; policies warn / measured / verified-only / off.'
+- name: horizon-shield (Claude Code plugin)
+  registry: github (Claude Code plugin marketplace "the-horizons")
+  url: https://github.com/ogasurfproject-jpg/horizon-shield/tree/main/plugin
+  repository: https://github.com/ogasurfproject-jpg/horizon-shield
+  language: Markdown + JSON manifests
+  kind: agent plugin — remote MCP connector to https://mcp.horizonshield.dev + skill + three slash commands (/audit, /red-flags, /verify)
+  official: true
+  version: 1.1.0
+  published: null
+  license: MIT
+  author: Toshikatsu Oga <contact@the-horizons-innovation.com>
+  install: '/plugin marketplace add ogasurfproject-jpg/horizon-shield && /plugin install horizon-shield@the-horizons'
+  note: 'Version read from plugin/.claude-plugin/plugin.json; no registry metadata endpoint exists for a git-hosted plugin, so published is null. The marketplace manifest (.claude-plugin/marketplace.json) names owner The HORIZONs Co., Ltd.'
+- name: a2a-conduct-walk
+  registry: git (uvx from GitHub subdirectory)
+  url: https://github.com/ogasurfproject-jpg/horizon-shield/tree/main/workers/hs-ledger/nenrin/a2a-conduct-walk
+  repository: https://github.com/ogasurfproject-jpg/horizon-shield
+  language: Python (standard library only, >=3.8)
+  kind: CLI (a2a-conduct-walk) + stdio MCP server (conduct-witness-mcp)
+  official: true
+  version: 1.1.0
+  published: null
+  license: Apache-2.0
+  author: The HORIZ音s株式会社
+  install: 'uvx --from "git+https://github.com/ogasurfproject-jpg/horizon-shield#subdirectory=workers/hs-ledger/nenrin/a2a-conduct-walk" a2a-conduct-walk'
+  note: 'Version from pyproject.toml. NOT on PyPI (pypi.org/pypi/a2a-conduct-walk/json and /conduct-witness-mcp/json both 404), so there is no dated release metadata; published is null. See cli/horizonshield-dev-cli.yml.'
+- name: mcp-conduct-action
+  registry: github (GitHub Action)
+  url: https://github.com/ogasurfproject-jpg/mcp-conduct-action
+  language: Python
+  kind: CI step — measures an MCP server against the gate and recomputes the verdict hash
+  official: true
+  version: null
+  published: null
+  author: The HORIZONs Co., Ltd.
+  note: 'action.yml read (inputs endpoint, allow_tool_call, fail_on_not_verified, join_register, gate; outputs status, record_sha256, recomputed, checked_at). GitHub releases/tags could not be listed (API rate-limited at probe time), so version is null.'
+- name: conduct-witness-action
+  registry: github (GitHub Action)
+  url: https://github.com/ogasurfproject-jpg/horizon-shield/tree/main/conduct-witness-action
+  kind: CI step — files a witness walk on the ledger
+  official: true
+  version: null
+  published: null
+  note: Present in the repo tree (conduct-witness-action/README.md); not inspected further.
+- name: horizon-shield (Gemini CLI extension)
+  registry: cdn (provider-hosted manifest)
+  url: https://shield.the-horizons-innovation.com/gemini-extension.json
+  kind: agent extension manifest — mcpServers.horizon-shield.httpUrl https://mcp.horizonshield.dev, contextFileName GEMINI.md
+  official: true
+  version: 1.0.0
+  published: null
+  note: Version read from the manifest itself; a static file has no release metadata.
+searched:
+- {registry: npm, query: 'https://registry.npmjs.org/-/v1/search?text=horizon-shield', result: 'no first-party match (unrelated packages only)'}
+- {registry: npm, query: 'https://registry.npmjs.org/horizon-shield', status: 404}
+- {registry: npm, query: 'https://registry.npmjs.org/@horizonshield%2Fmcp', status: 404}
+- {registry: npm, query: 'https://registry.npmjs.org/mcp-conduct', status: 200}
+- {registry: pypi, query: 'https://pypi.org/pypi/horizon-shield/json', status: 404}
+- {registry: pypi, query: 'https://pypi.org/pypi/a2a-conduct-walk/json', status: 404}
+- {registry: pypi, query: 'https://pypi.org/pypi/jccdb/json', status: 404}
+- {registry: huggingface, query: 'https://huggingface.co/api/datasets/ogasurfproject/jccdb', status: 200, note: 'The JCCDB dataset (CC BY 4.0, lastModified 2026-08-28) — data, not a client library; not counted.'}

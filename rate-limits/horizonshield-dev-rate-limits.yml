@@ -1,0 +1,27 @@
+generated: '2026-09-19'
+method: searched
+source: https://mcp.horizonshield.dev/
+docs:
+- https://gate.horizonshield.dev/spec
+- https://shield.the-horizons-innovation.com/llms.txt
+- https://shield.the-horizons-innovation.com/yakumo/plans/
+limit_count: 0
+summary: >-
+  No rate limit is documented for any public API surface, and none was signalled: the KIRA initialize/tools/list,
+  gate and ledger responses carried no RateLimit-*, X-RateLimit-* or Retry-After headers, and no 429 was observed.
+  The gate spec, the plugin README, the llms.txt and the OpenAPI say nothing about request ceilings. Two adjacent
+  facts are recorded so they are not mistaken for API limits: the Yakumo Premium plan describes agent references to a
+  member's profile as "within fair use, about 5,000 queries/month as a guide" (a per-member plan allowance, not a
+  caller limit), and the gate's watchlist re-measures registered endpoints on a fixed daily cadence (a schedule, not
+  a quota). The provider does publish its own traffic — /.well-known/usage-stats.json shows 1,867 external calls in
+  the last 30 days — which is a transparency signal rather than a limit.
+rate_limits: []
+headers_observed:
+  kira_mcp_post: [content-type, access-control-allow-origin, access-control-allow-headers, access-control-expose-headers (mcp-session-id), cf-ray, server: cloudflare]
+  rate_limit_headers: []
+  status_on_exhaustion: unobserved
+edge: Cloudflare (all horizonshield.dev hosts and both workers.dev origins)
+adjacent_signals:
+- {what: 'Yakumo Premium fair-use guide', value: 'about 5,000 agent queries per member profile per month', scope: per-member plan allowance, source: 'https://shield.the-horizons-innovation.com/yakumo/plans/'}
+- {what: gate re-measurement cadence, value: daily, scope: per watched endpoint, source: 'https://gate.horizonshield.dev/watchlist'}
+- {what: public usage counters, value: '5,438 total external calls; 1,867 in 2026-08-22..2026-09-20', source: 'https://mcp.horizonshield.dev/.well-known/usage-stats.json'}

@@ -1,0 +1,29 @@
+generated: '2026-09-19'
+method: searched
+source: https://github.com/ogasurfproject-jpg/horizon-shield
+note: >-
+  Both skills are PROVIDER-PUBLISHED and saved verbatim (SKILL.md frontmatter + body unchanged) from the public
+  horizon-shield repository on 2026-09-19. horizon-shield ships inside the provider's Claude Code plugin
+  (plugin/skills/horizon-shield/SKILL.md) next to three slash commands; conduct-witness is a repo-level skill
+  (skills/conduct-witness/SKILL.md). Every tool name they reference was checked against the live tools/list saved in
+  mcp/horizonshield-dev-mcp-tools.json — the plugin skill names 14 tools (the server now lists 15; get_agent_card is
+  named, verify_integrity_claim is named; the count in the plugin README predates the current list). Nothing was
+  generated: with no OpenAPI for the KIRA server, MCP tool names are the operations these skills ground in.
+skills:
+- file: horizonshield-dev-horizon-shield.md
+  name: horizon-shield
+  method: searched
+  source: https://raw.githubusercontent.com/ogasurfproject-jpg/horizon-shield/main/plugin/skills/horizon-shield/SKILL.md
+  description: Audit whether a Japanese construction or renovation estimate is fair using the HORIZON SHIELD MCP tools; check overcharge red flags; issue an independently verifiable fair-price receipt.
+  api: mcp/horizonshield-dev-mcp.yml
+  server: https://mcp.horizonshield.dev/
+  operations: [get_price_range, search_cost_category, audit_estimate, check_red_flags, verify_fair_price]
+  tools_named: [get_price_range, audit_estimate, verify_fair_price, verify_integrity_claim, create_ap2_fairness_attestation, check_red_flags, get_estimate_reading_guide, search_cost_category, list_cost_categories, get_fair_price_sources, get_jccdb_dataset_info, preview_reverse_estimate, suggest_ehn, get_agent_card]
+- file: horizonshield-dev-conduct-witness.md
+  name: conduct-witness
+  method: searched
+  source: https://raw.githubusercontent.com/ogasurfproject-jpg/horizon-shield/main/skills/conduct-witness/SKILL.md
+  description: Walk an A2A or MCP agent as an independent witness and file the observation on the public conduct ledger under the user's name.
+  api: cli/horizonshield-dev-cli.yml
+  server: https://ledger.horizonshield.dev/witness
+  operations: ['a2a-conduct-walk --origin <ORIGIN> --mode a2a [--submit]', 'POST https://ledger.horizonshield.dev/witness', 'GET <origin>/.well-known/agent-card.json', 'GET <origin>/.well-known/mcp-conduct.json']

@@ -1,0 +1,9 @@
+Contact: mailto:contact@the-horizons-innovation.com
+Preferred-Languages: en, ja
+Canonical: https://gate.horizonshield.dev/.well-known/security.txt
+Policy: https://shield.the-horizons-innovation.com/verify-directory/
+
+# This service publishes verdicts about other people's servers.
+# If a verdict here is wrong, that is a security problem, not a support ticket.
+# Send the endpoint, what you measured, and from where. A report that contradicts
+# our own measurement is the most useful kind, and it will be published either way.

@@ -1,0 +1,44 @@
+generated: '2026-09-19'
+method: searched
+probe: true
+source: https://shield.the-horizons-innovation.com/privacy
+probed:
+- {url: 'https://shield.the-horizons-innovation.com/privacy', status: 200}
+- {url: 'https://shield.the-horizons-innovation.com/tos', status: 200}
+- {url: 'https://shield.the-horizons-innovation.com/index_en.html', status: 200}
+- {url: 'https://shield.the-horizons-innovation.com/kantei/', status: 200}
+- {url: 'https://shield.the-horizons-innovation.com/accessibility/', status: 404}
+- {url: 'https://shield.the-horizons-innovation.com/legal/', status: 404}
+- {url: 'https://shield.the-horizons-innovation.com/security/', status: 404}
+- {url: 'https://shield.the-horizons-innovation.com/consent/', status: 200, note: 'A consent page exists (7.7 KB); its text was not extracted for a signal.'}
+- {url: 'https://mcp.horizonshield.dev/.well-known/usage-stats.json', status: 200}
+- {url: 'https://ledger.horizonshield.dev/', status: 200, note: 'Root descriptor carries a privacy block: access measurement enabled; recorded = route label, client class, method, referer host, status; NOT recorded = IP, geolocation, query strings, full UA, request bodies, credentials.'}
+signals:
+  ai_transparency:
+    url: https://shield.the-horizons-innovation.com/index_en.html
+    evidence:
+    - source: https://shield.the-horizons-innovation.com/index_en.html
+      http_status: 200
+      fetched: '2026-09-19'
+      quote: 'Verifiable AI for construction quotes. A deterministic cost diagnostic system. Same input, same output, every time — verified by a 12-character SHA-256 audit hash printed on every report. … Open dataset · CC-BY 4.0 // engrXiv DOI: 10.31224/7007 // EU AI Act-aligned'
+    - source: https://shield.the-horizons-innovation.com/kantei/
+      http_status: 200
+      fetched: '2026-09-19'
+      quote: '診断するのは、工事を請け負わない第三者のAI。… 建設30年の職人が監修 (The diagnosis is performed by a third-party AI that does not carry out construction work … supervised by a craftsman with 30 years in construction.)'
+    - source: https://mcp.horizonshield.dev/.well-known/verification-contract.json
+      http_status: 200
+      fetched: '2026-09-19'
+      quote: 'estimator {id: HORIZON SHIELD KIRA, version: 1.0.0}; ruleset {id: kira-redflag, version: 1}; "Trust model: conferred, not assumed. Any agent recomputes the claim itself from the response."'
+    note: >-
+      The provider discloses, on the product pages a user sees before submitting anything, that the diagnosis is
+      produced by an AI system (named KIRA), that it is deterministic and hash-verifiable, that a named human
+      supervises it, and — in the ToS disclaimer — that reports are expert opinion without legal force. That is the
+      substance of an AI-system disclosure to end users. The "EU AI Act-aligned" phrase on the English page is the
+      provider's own claim and is recorded as such, not as a verified conformity assessment.
+considered_and_omitted:
+  data_subject_request: 'The privacy policy names a contact (contact@the-horizons-innovation.com / 0463-74-5917) and states uploaded estimate files are deleted promptly after diagnosis, but describes no access/correction/deletion request procedure or response period — a contact, not a DSR process.'
+  subprocessors: 'The privacy policy names PayPal (payments; card data never held by the company), Google and Cloudflare "etc." for site operation/analytics — named vendors with purposes, but undated and explicitly non-exhaustive, below the dated-table bar.'
+  transparency_report: 'usage-stats.json publishes call counters and the gate publishes its own failing measurements; neither is a content-moderation or legal-request transparency report in the DSA/OSA sense.'
+  accessibility_conformance: /accessibility/ 404; no VPAT or WCAG statement found.
+  sbom: Not searched for beyond the docs host and repo root (never derived).
+  data_residency: 'The ledger states no IPs are stored and the plugin README says "No personal data is stored by the server"; no residency/region statement.'

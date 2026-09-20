@@ -1,0 +1,84 @@
+{
+  "contract": "horizon-shield-verification-contract",
+  "version": "0.3",
+  "issuer": {
+    "organization": "The HORIZ音s株式会社",
+    "service": "HORIZON SHIELD KIRA",
+    "url": "https://shield.the-horizons-innovation.com"
+  },
+  "trust_model": "Conferred, not assumed. Any agent recomputes the claim itself from the response. No trust in the UI or the issuer is required.",
+  "verified_result": {
+    "description": "Fields present in every estimate-integrity-audit response that let a third party verify the claim without contacting the issuer.",
+    "claim_hash": {
+      "field": "claim_sha256",
+      "algorithm": "SHA-256",
+      "source_field": "signed_payload",
+      "note": "From contract 0.2, signed_payload contains skill, contract, ruleset {id, version}, input_text, red_flags, issued_at, expires_at, estimate_version. The ruleset identity is folded INTO the hashed payload, so an old claim recomputes as what it was, under the rules that made it. It does not contain souba-db prices. expires_at is issued_at plus 365 days. estimate_version is the first 8 hex of SHA-256 of input_text. Claims issued under 0.1.1 lack the contract and ruleset fields; their ruleset identity was metadata only and verifiers report folded_into_hash: false for them."
+    },
+    "recompute": "SHA-256(signed_payload) must equal claim_sha256. No price layer needed.",
+    "estimator": {
+      "id": "HORIZON SHIELD KIRA",
+      "version": "1.0.0"
+    },
+    "ruleset": {
+      "id": "kira-redflag",
+      "version": "1",
+      "note": "Ruleset identity is public and, from contract 0.2, folded into signed_payload itself (hashed). The souba-db thresholds behind it are not exposed."
+    },
+    "timestamp_anchor": {
+      "type": "PTKA",
+      "chain": "bitcoin",
+      "block": 949356,
+      "method": "OpenTimestamps",
+      "jidec": {
+        "status": "operational",
+        "ledger": "https://hs-ledger.oga-surf-project.workers.dev",
+        "catalog": "https://hs-ledger.oga-surf-project.workers.dev/.well-known/api-catalog",
+        "verification_guide": "https://hs-ledger.oga-surf-project.workers.dev/llms.txt",
+        "mcp": "https://hs-jidec-mcp.oga-surf-project.workers.dev/mcp",
+        "note": "JIDEC is live: an append-only, Bitcoin-anchored public ledger of the verification process itself. Resolve any citation at /cite/{citation}; recompute the hash yourself from /ledger/{n}?format=raw. No trust in HORIZON SHIELD is required.",
+        "limits": "JIDEC is NOT a conformant SCITT Transparency Service and OpenTimestamps has no RFC/ISO/ETSI/eIDAS standing. See https://hs-ledger.oga-surf-project.workers.dev/health for the full self-declared limits."
+      },
+      "per_diagnosis_roadmap": "Per-diagnosis receipts are being migrated onto the live JIDEC ledger at https://hs-ledger.oga-surf-project.workers.dev."
+    }
+  },
+  "failure_model": {
+    "policy": "Fail closed. If the claim cannot be recomputed or the chain cannot be verified, the result is unverified. Never a soft pass. From 0.3, a check that was available for this call but not requested does not round up either: the result is partial.",
+    "result_on_failure": "unverified",
+    "result_when_check_not_requested": "partial",
+    "result_values": {
+      "verified": "every check available for this call ran and passed",
+      "partial": "nothing failed, but at least one check available for this call was not requested (see skipped_because_not_requested)",
+      "unverified": "a check failed, or the claim could not be recomputed"
+    },
+    "partial_scope_note": "audit_ruleset_recheck is a permanent non-capability of this endpoint, not a per-call abstention, so it never causes partial. It is disclosed separately and always.",
+    "failure_reasons": {
+      "stale_data": {
+        "user_meaning": "recheck later",
+        "triggers": [
+          "expired_declaration"
+        ]
+      },
+      "changed_scope": {
+        "user_meaning": "re-audit required",
+        "triggers": [
+          "changed_estimate_version"
+        ]
+      },
+      "missing_evidence": {
+        "user_meaning": "do not trust",
+        "triggers": [
+          "missing_receipt",
+          "unverifiable_chain"
+        ]
+      }
+    }
+  },
+  "credits": "Failure-reason taxonomy (stale data / changed scope / missing evidence) proposed by Symon Baikov (@symonbaikov.bsky.social). Folding the ruleset identity into the hashed payload (contract 0.2) prompted by Federico Blanco Sanchez-Llanos. Separating a not-requested check from a passed one (contract 0.3) prompted by Federico Blanco Sanchez-Llanos.",
+  "changelog": {
+    "0.3": "Verifier-side only: the signed_payload format is unchanged from 0.2, so claims issued today still carry contract 0.2 and still recompute identically. result gains a third value, partial. Previously a call that omitted estimate_version returned result: verified with scope_check: skipped, so a consumer reading only result rounded an unperformed check up into a pass. partial shares no prefix with verified, so naive string comparison now fails closed. Prompted by Federico Blanco Sanchez-Llanos. vc-contract-0.3",
+    "0.2": "contract and ruleset {id, version} folded INTO signed_payload (hashed). Prevents silent reinterpretation of old claims under a newer ruleset. Prompted by Federico Blanco Sanchez-Llanos. vc-contract-0.2",
+    "0.1.1": "ruleset identity as metadata alongside claim_sha256 (outside the hash)."
+  },
+  "url": "https://mcp.horizonshield.dev/.well-known/verification-contract.json"
+}

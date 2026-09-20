@@ -1,23 +1,329 @@
 aid: horizonshield-dev
 name: The HORIZ音s株式会社
-description: 'The HORIZ音s株式会社 is a company surfaced via the API Evangelist harvest backlog (source: a2a-registry)
-  and added to the network as a stub for full-pipeline profiling.'
+description: >-
+  The HORIZ音s株式会社 (The HORIZONs Co., Ltd., Hiratsuka, Kanagawa) operates HORIZON SHIELD, a buyer-side,
+  agent-native fair-price verification service for Japanese construction and renovation estimates, built by a
+  30-year master carpenter on the open JCCDB dataset (95,403 items, CC BY 4.0). Its flagship KIRA server at
+  mcp.horizonshield.dev is a free, anonymous remote MCP server (15 tools, 5 prompts) and A2A agent that audits a
+  quoted price against fair ranges, flags overcharge tactics, and issues SHA-256 receipts anchored to Bitcoin via
+  OpenTimestamps; a FairPriceAttestation tool bridges to Google's AP2 Cart Mandate. Around it sit a public MCP
+  Verification Gate (the family's one OpenAPI, plus MCP and A2A) that measures other people's MCP servers against
+  an A2A Conduct Extension the company authors, the JIDEC append-only verification ledger with an RFC 9727
+  api-catalog, the Yakumo verified-contractor directory MCP, a WebMCP intake server and a femtech source registry —
+  every card JWS-signed, every surface unauthenticated by design, and paid for by buyers rather than contractors.
 url: https://raw.githubusercontent.com/api-evangelist/horizonshield-dev/refs/heads/main/apis.yml
+image: https://shield.the-horizons-innovation.com/horizon_shield_logo_512.png
 x-type: company
 x-source: harvest:a2a-registry
-x-tier: stub
-x-tier-reason: harvest
+x-tier: profiled
+x-tier-reason: enrichment pass 2026-09-19 (local-v3; was a2a-registry harvest stub)
+x-identity-note: >-
+  The registrable domain horizonshield.dev has no A/AAAA record on any public resolver (checked 1.1.1.1, 8.8.8.8,
+  9.9.9.9 on 2026-09-19) and carries only MCP-registry and a2aregistry verification TXT records; every service runs
+  on a subdomain and the company website is https://shield.the-horizons-innovation.com/ (the provider.url in its own
+  agent cards). Unrelated to the cybersecurity products at horizonshield.org / horizonshield.ai, as the provider's
+  own JSON-LD states.
 specificationVersion: '0.20'
 created: '2026-09-19'
 modified: '2026-09-19'
 tags:
-- Company
-apis: []
+- Construction
+- Renovation
+- Cost Estimation
+- Fair Pricing
+- Consumer Protection
+- Verification
+- Transparency Ledger
+- Open Data
+- MCP
+- A2A
+- AP2
+- Agents
+- agent-native
+- Japan
+apis:
+- aid: horizonshield-dev:horizon-shield-kira-mcp-server
+  name: HORIZON SHIELD KIRA MCP Server
+  description: >-
+    Remote Model Context Protocol server at https://mcp.horizonshield.dev/ (Streamable HTTP, POST only, protocol
+    2025-06-18, serverInfo horizon-shield 1.0.9, listed on registry.modelcontextprotocol.io as
+    dev.horizonshield/horizon-shield). Anonymous: initialize, tools/list (15 tools with inputSchema, outputSchema
+    and read-only annotations) and prompts/list (5) need no key. Tools return fair min/avg/max price ranges and an
+    overcharge danger threshold for 61 Japanese work categories, audit a quoted JPY price, scan estimate wording for
+    known high-pressure tactics, issue SHA-256 tamper-evident receipts with a public verify URL, verify such
+    receipts fail-closed, create an AP2 FairPriceAttestation (the one ledger-appending tool), and look up
+    verification-passed contractors on Yakumo. Also installable as a Claude Code plugin and a Gemini CLI extension
+    that connect to the same URL.
+  humanURL: https://github.com/ogasurfproject-jpg/horizon-shield#readme
+  baseURL: https://mcp.horizonshield.dev
+  tags:
+  - MCP
+  - agent-native
+  - Cost Estimation
+  - Fair Pricing
+  - AP2
+  properties:
+  - type: MCPServer
+    url: mcp/horizonshield-dev-mcp.yml
+  - type: MCPServer
+    name: KIRA MCP endpoint (Streamable HTTP, POST)
+    url: https://mcp.horizonshield.dev/
+  - type: ToolCrosswalk
+    url: mcp/horizonshield-dev-tool-crosswalk.yml
+  - type: Documentation
+    url: https://github.com/ogasurfproject-jpg/horizon-shield#readme
+  - type: GettingStarted
+    url: https://github.com/ogasurfproject-jpg/horizon-shield/blob/main/plugin/README.md
+- aid: horizonshield-dev:horizon-shield-kira-a2a-agent
+  name: HORIZON SHIELD KIRA A2A Agent
+  description: >-
+    Agent2Agent surface of the same service: a JWS-signed agent card at
+    https://mcp.horizonshield.dev/.well-known/agent-card.json (protocolVersion 0.3.0 with 1.0-style
+    supportedInterfaces, JSONRPC, version 1.0.0) declaring three skills — a borderless estimate-integrity audit, a
+    Japan property acquisition and renovation intake routed to a licensed real-estate agent, and fail-closed
+    verification of a signed integrity claim — plus the provider-authored A2A Conduct Extension disclosing who
+    pays the agent (buyer; no referral, listing or success fee). message/send on the same JSON-RPC URL as the MCP
+    server returned a completed Task; streaming and push notifications are declared unsupported.
+  humanURL: https://shield.the-horizons-innovation.com/
+  baseURL: https://mcp.horizonshield.dev
+  tags:
+  - A2A
+  - agent-native
+  - Verification
+  properties:
+  - type: AgentCard
+    url: a2a/horizonshield-dev-a2a.yml
+  - type: AgentCard
+    name: A2A Agent Card (provider-hosted, JWS-signed)
+    url: https://mcp.horizonshield.dev/.well-known/agent-card.json
+- aid: horizonshield-dev:mcp-verification-gate-api
+  name: MCP Verification Gate (MCP conduct register) API
+  description: >-
+    Read-only, keyless REST API at https://gate.horizonshield.dev described by an OpenAPI 3.1.0 document (25
+    operations, version 0.4.7): the public register of MCP endpoints measured nightly against five stated
+    conditions (speaks MCP, publishes an A2A agent card, declares who pays it, identical input gives identical
+    output, the verdict is recomputable), per-endpoint history and change feeds (JSON and Atom), badges and
+    embeds, the A2A Conduct Extension v1 specification, hash recomputation and NIP-01/BIP340 event verification,
+    and the gate's own self-measurement. The same register is exposed over MCP (5 tools at /mcp) and A2A (/a2a),
+    and consumed by the first-party npm client mcp-conduct and a GitHub Action.
+  humanURL: https://shield.the-horizons-innovation.com/verify-directory/
+  baseURL: https://gate.horizonshield.dev
+  tags:
+  - Verification
+  - MCP
+  - A2A
+  - Transparency Ledger
+  - Agents
+  properties:
+  - type: OpenAPI
+    url: openapi/horizonshield-dev-mcp-conduct-register-openapi.json
+  - type: OpenAPI
+    name: MCP conduct register OpenAPI 3.1.0 (provider-hosted)
+    url: https://gate.horizonshield.dev/openapi.json
+  - type: APIReference
+    url: https://gate.horizonshield.dev/spec
+  - type: Documentation
+    url: https://github.com/ogasurfproject-jpg/mcp-conduct#readme
+  - type: Overlay
+    url: overlays/horizonshield-dev-mcp-conduct-register-overlay.yaml
+  - type: MCPServer
+    name: Gate MCP endpoint (Streamable HTTP, POST)
+    url: https://gate.horizonshield.dev/mcp
+  - type: AgentCard
+    name: Gate A2A Agent Card (provider-hosted, JWS-signed; graded in a2a/)
+    url: https://gate.horizonshield.dev/.well-known/agent-card.json
+  - type: ChangeLog
+    name: Register state changes (Atom)
+    url: https://gate.horizonshield.dev/feed.xml
+- aid: horizonshield-dev:jidec-verification-ledger-api
+  name: JIDEC Verification Ledger API
+  description: >-
+    Append-only, Bitcoin-anchored (OpenTimestamps) public ledger of the verification process at
+    https://ledger.horizonshield.dev: an index of anchored entries, per-entry raw bytes and .ots proofs, citation
+    resolution (/cite/{citation}), executable verification recipes (/verify/{n}), anchored verification paths and
+    replay, a witness intake for third-party conduct walks, and agreement records. Discovery is an RFC 9727
+    api-catalog served as application/linkset+json, an RFC 9116 security.txt, an llms.txt verification guide and a
+    JWS-signed A2A card; a read-only MCP twin (4 tools) runs at https://jidec.horizonshield.dev/mcp. The service
+    states it is SCITT-shaped but not a conformant SCITT transparency service.
+  humanURL: https://ledger.horizonshield.dev/llms.txt
+  baseURL: https://ledger.horizonshield.dev
+  tags:
+  - Transparency Ledger
+  - Verification
+  - Open Data
+  - MCP
+  - A2A
+  properties:
+  - type: APICatalog
+    url: well-known/horizonshield-dev-api-catalog.json
+  - type: APICatalog
+    name: RFC 9727 API catalog (provider-hosted linkset)
+    url: https://ledger.horizonshield.dev/.well-known/api-catalog
+  - type: LLMsTxt
+    url: llms/horizonshield-dev-jidec-llms.txt
+  - type: Documentation
+    url: https://ledger.horizonshield.dev/llms.txt
+  - type: AgentCard
+    name: JIDEC A2A Agent Card (provider-hosted, JWS-signed; graded in a2a/)
+    url: https://ledger.horizonshield.dev/.well-known/agent-card.json
+  - type: MCPServer
+    name: JIDEC read-only MCP endpoint
+    url: https://jidec.horizonshield.dev/mcp
+- aid: horizonshield-dev:yakumo-verified-contractor-mcp
+  name: Yakumo Verified-Contractor Directory MCP
+  description: >-
+    Remote MCP server at https://hearing.horizonshield.dev/mcp (serverInfo HORIZON SHIELD YAKUMO 2.3.1, protocol
+    2025-06-18) exposing six read-only tools over the Yakumo mall, where only contractors that pass the KIRA
+    fair-price audit are listed: list verified stores by area and trade, fetch a member profile by number, find a
+    contractor from a free-text need, mall overview, how verification works, and check a named contractor
+    (returns "not measured" rather than a judgement for non-members). Returns integrity scores and tiers, never
+    prices; pending stores are returned separately; zero matches are returned as zero. Its A2A card discloses
+    paid_by seller / listing_fee true — the one seller-funded surface in the family.
+  humanURL: https://shield.the-horizons-innovation.com/yakumo/
+  baseURL: https://hearing.horizonshield.dev/mcp
+  tags:
+  - MCP
+  - Construction
+  - Renovation
+  - Verification
+  properties:
+  - type: MCPServer
+    name: Yakumo MCP endpoint (Streamable HTTP, POST)
+    url: https://hearing.horizonshield.dev/mcp
+  - type: AgentCard
+    name: Yakumo A2A Agent Card (provider-hosted; graded in a2a/)
+    url: https://hearing.horizonshield.dev/.well-known/agent-card.json
+  - type: Pricing
+    url: https://shield.the-horizons-innovation.com/yakumo/plans/
+- aid: horizonshield-dev:webmcp-intake-server
+  name: HORIZON SHIELD WebMCP Intake Server
+  description: >-
+    A second public MCP endpoint at https://web.horizonshield.dev/mcp (serverInfo hs-webmcp 1.0.4, protocol
+    2025-06-18; server.json published at shield.the-horizons-innovation.com/server-webmcp.json) acting as an intake
+    desk for external LLMs and agents: route_request, run_full_audit (audit + tactics scan + awareness draft in
+    one call), intake_estimate (bridges a homeowner quote to the internal KIRA audit and a free EHN third-party
+    check), scan_tactics and draft_broadcast. All five tools are annotated read-only and idempotent.
+  humanURL: https://shield.the-horizons-innovation.com/llms.txt
+  baseURL: https://web.horizonshield.dev/mcp
+  tags:
+  - MCP
+  - agent-native
+  - Cost Estimation
+  properties:
+  - type: MCPServer
+    name: WebMCP intake endpoint (Streamable HTTP, POST)
+    url: https://web.horizonshield.dev/mcp
+- aid: horizonshield-dev:femtech-source-registry-mcp
+  name: HORIZON SHIELD Femtech Source Registry MCP
+  description: >-
+    A separate product line by the same company: a neutral, verifiable registry of femtech information sources
+    exposed as a remote MCP server at https://femtech.horizonshield.dev/mcp (hs-femtech-mcp 0.4.1) with nine tools
+    (register a source after machine checks of five conditions, list and fetch entries, third-party hash
+    verification, neutral topic and product-category explainers, how-to-verify, agent card, check a source) and a
+    JWS-signed A2A card at /.well-known/agent-card.json. Explicitly makes no diagnosis or efficacy claims. Source
+    is public at github.com/ogasurfproject-jpg/hs-femtech-mcp.
+  humanURL: https://github.com/ogasurfproject-jpg/hs-femtech-mcp
+  baseURL: https://femtech.horizonshield.dev/mcp
+  tags:
+  - MCP
+  - A2A
+  - Verification
+  properties:
+  - type: MCPServer
+    name: Femtech registry MCP endpoint
+    url: https://femtech.horizonshield.dev/mcp
+  - type: AgentCard
+    name: Femtech registry A2A Agent Card (provider-hosted, JWS-signed; graded in a2a/)
+    url: https://femtech.horizonshield.dev/.well-known/agent-card.json
 maintainers:
 - FN: Kin Lane
   email: kin@apievangelist.com
 - FN: APIs.json
   email: info@apis.io
 common:
+- type: DomainSecurity
+  url: security/horizonshield-dev-domain-security.yml
+- type: AgenticAccess
+  url: agentic-access/horizonshield-dev-agentic-access.yml
 - type: Website
-  url: https://horizonshield.dev/
+  url: https://shield.the-horizons-innovation.com/
+- type: Documentation
+  url: https://github.com/ogasurfproject-jpg/horizon-shield#readme
+- type: APIReference
+  url: https://gate.horizonshield.dev/openapi.json
+- type: GettingStarted
+  url: https://github.com/ogasurfproject-jpg/horizon-shield/blob/main/plugin/README.md
+- type: GitHubOrganization
+  url: https://github.com/ogasurfproject-jpg
+- type: Blog
+  url: https://shield.the-horizons-innovation.com/blog/
+- type: Support
+  url: https://shield.the-horizons-innovation.com/faq/
+- type: Leadership
+  url: https://shield.the-horizons-innovation.com/about-founder.html
+- type: Pricing
+  url: https://shield.the-horizons-innovation.com/yakumo/plans/
+- type: TermsOfService
+  url: https://shield.the-horizons-innovation.com/tos
+- type: PrivacyPolicy
+  url: https://shield.the-horizons-innovation.com/privacy
+- type: LLMsTxt
+  url: llms/horizonshield-dev-llms.txt
+- type: LLMsTxt
+  name: llms.txt (provider-hosted)
+  url: https://shield.the-horizons-innovation.com/llms.txt
+- type: AgentCard
+  url: a2a/horizonshield-dev-a2a.yml
+- type: MCPServer
+  url: mcp/horizonshield-dev-mcp.yml
+- type: ToolCrosswalk
+  url: mcp/horizonshield-dev-tool-crosswalk.yml
+- type: WellKnown
+  url: well-known/horizonshield-dev-well-known.yml
+- type: APICatalog
+  url: well-known/horizonshield-dev-api-catalog.json
+- type: SecurityTxt
+  url: well-known/horizonshield-dev-security.txt
+- type: Security
+  url: security/horizonshield-dev-vulnerability-disclosure.yml
+- type: VulnerabilityDisclosure
+  url: security/horizonshield-dev-vulnerability-disclosure.yml
+- type: Authentication
+  url: authentication/horizonshield-dev-authentication.yml
+- type: Conventions
+  url: conventions/horizonshield-dev-conventions.yml
+- type: ErrorCatalog
+  url: errors/horizonshield-dev-problem-types.yml
+- type: Lifecycle
+  url: lifecycle/horizonshield-dev-lifecycle.yml
+- type: ChangeLog
+  url: changelog/horizonshield-dev-changelog.yml
+- type: Conformance
+  url: conformance/horizonshield-dev-conformance.yml
+- type: Packages
+  url: packages/horizonshield-dev-packages.yml
+- type: SDKs
+  url: packages/horizonshield-dev-packages.yml
+- type: CLI
+  url: cli/horizonshield-dev-cli.yml
+- type: AgentSkill
+  url: skills/_index.yml
+- type: AgentSkill
+  name: horizon-shield (provider-published SKILL.md)
+  url: skills/horizonshield-dev-horizon-shield.md
+- type: AgentSkill
+  name: conduct-witness (provider-published SKILL.md)
+  url: skills/horizonshield-dev-conduct-witness.md
+- type: Plans
+  url: plans/horizonshield-dev-plans-pricing.yml
+- type: RateLimits
+  url: rate-limits/horizonshield-dev-rate-limits.yml
+- type: DataModel
+  url: data-model/horizonshield-dev-data-model.yml
+- type: AITransparency
+  url: https://shield.the-horizons-innovation.com/index_en.html
+x-enrichment:
+  date: '2026-09-19'
+  status: enriched
+  artifacts_added: 46
+  pass: local-v3

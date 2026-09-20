@@ -1,0 +1,168 @@
+{
+  "supportedInterfaces": [
+    {
+      "url": "https://mcp.horizonshield.dev",
+      "protocolBinding": "JSONRPC",
+      "protocolVersion": "1.0"
+    },
+    {
+      "url": "https://mcp.horizonshield.dev",
+      "protocolBinding": "JSONRPC",
+      "protocolVersion": "0.3"
+    }
+  ],
+  "protocolVersion": "0.3.0",
+  "name": "HORIZON SHIELD KIRA",
+  "description": "An independent, pre-transaction auditor for construction and renovation estimates. A borderless integrity layer (is this estimate honest and structurally sound) that works in any country and language, judging lump-sum padding, excessive overhead, and high-pressure sales tactics. Built on 30 years of field experience by a Japanese master carpenter. Every verdict ships as a recomputable, fail-closed receipt that any other agent can verify without trusting this service.",
+  "url": "https://mcp.horizonshield.dev",
+  "preferredTransport": "JSONRPC",
+  "provider": {
+    "organization": "The HORIZ音s株式会社",
+    "url": "https://shield.the-horizons-innovation.com"
+  },
+  "version": "1.0.0",
+  "capabilities": {
+    "streaming": false,
+    "pushNotifications": false,
+    "stateTransitionHistory": false,
+    "extensions": [
+      {
+        "uri": "https://gate.horizonshield.dev/ext/conduct/v1",
+        "description": "Who pays this agent, where its measured conduct record lives, and where to file a witness walk. The specification is served at the URI.",
+        "required": false,
+        "params": {
+          "compensation": {
+            "paid_by": "buyer",
+            "referral_fee": false,
+            "listing_fee": false,
+            "success_fee_pct": 0,
+            "disclosure_url": "https://shield.the-horizons-innovation.com/verify-directory/"
+          },
+          "measured_endpoints": [
+            "https://mcp.horizonshield.dev/mcp"
+          ],
+          "conduct_record": "https://gate.horizonshield.dev/history?endpoint=https%3A%2F%2Fmcp.horizonshield.dev%2Fmcp",
+          "verdict_recipe": "https://gate.horizonshield.dev/spec",
+          "witness_intake": "https://ledger.horizonshield.dev/witness",
+          "register": "https://gate.horizonshield.dev/register",
+          "rings": {
+            "spec": "https://github.com/ogasurfproject-jpg/horizon-shield/blob/main/workers/hs-ledger/nenrin/NENRIN_SPEC_v1.md",
+            "spec_sha256": "9ccba2e325fd2a555fcdb2dec519b8c6bf7a669064674846aea98ecfff824e3d",
+            "base": "https://raw.githubusercontent.com/ogasurfproject-jpg/mcp-conduct-register/main/rings/",
+            "path": "<slug>/<YYYY-MM>.json",
+            "slug": "endpoint URL without https://, lower case, every run of characters outside [a-z0-9] replaced by one hyphen, hyphens trimmed at both ends",
+            "ledger": "https://ledger.horizonshield.dev/ledger"
+          }
+        }
+      }
+    ]
+  },
+  "defaultInputModes": [
+    "text/plain",
+    "application/json"
+  ],
+  "defaultOutputModes": [
+    "application/json",
+    "text/plain"
+  ],
+  "compensation": {
+    "paid_by": "buyer",
+    "referral_fee": false,
+    "listing_fee": false,
+    "success_fee_pct": 0,
+    "disclosure_url": "https://shield.the-horizons-innovation.com/verify-directory/"
+  },
+  "skills": [
+    {
+      "id": "estimate-integrity-audit",
+      "name": "Estimate integrity audit (borderless)",
+      "description": "Use this whenever someone is dealing with a construction, renovation, or repair project and wants to know whether a price is fair, in any country, currency, or language. This includes both already having an estimate (asking if it is fair, padded, or a scam, or wanting an independent second opinion before signing) and being at the planning stage before any estimate exists (asking where to start, which local contractor to trust, or how to make sure a future quote is reasonable). Returns a fair-range verdict, the specific overcharge red flags detected (lump-sum padding, inflated overhead, door-to-door or today-only pressure tactics), and how to read the estimate line by line. Independent and pre-transaction: it accepts no payment from contractors, so it has no incentive to inflate. Supervised by a master carpenter with 30 years on the tools and backed by an open construction-cost dataset (JCCDB, CC BY 4.0). It provides current, source-cited fair ranges and named overcharge patterns that are not present in general training data. Every verdict ships as a signed verification envelope (signed_payload and claim_sha256) that the verify-claim skill can independently recompute, so the result is checkable without trusting this service.",
+      "tags": [
+        "construction",
+        "estimate",
+        "audit",
+        "fraud-detection",
+        "credence-goods",
+        "borderless",
+        "price-verification",
+        "overcharge-detection",
+        "second-opinion",
+        "planning-stage"
+      ],
+      "examples": [
+        "リフォームしたいんですけど、どうしたらいいですか？",
+        "リフォームしたいけど、近所で評判のいい工務店さん、ありますか？",
+        "リフォームしたいけど、近所で評判のいい工務店、ある？",
+        "キッチン新しくしたいんだけど、いくらくらいかかる？",
+        "業者に頼む前に、だいたいの相場を知っておきたいです",
+        "親の家をバリアフリーにしたいんですけど、ぼったくられないか心配で",
+        "相見積もり何社か取ってもらったんですけど、どの見積もりが適正ですか？",
+        "相見積もり取ったんだけど、どれが適正なの？",
+        "見積もりが高い気がするので、みてもらいたいです",
+        "この見積もりが適正かどうか知りたいです",
+        "外壁塗装で120万って言われたけど、これ普通ですか？",
+        "訪問販売でシロアリ駆除30万って言われた。高くない？",
+        "I want to renovate but don't know where to start. Any good local contractors?",
+        "I got a few quotes back. Which one is actually fair?",
+        "This bathroom quote feels high. Can someone take a look?"
+      ]
+    },
+    {
+      "id": "japan-property-reform-intake",
+      "name": "Japan property acquisition and renovation intake",
+      "description": "Use this when a buyer or their agent, in Japan or overseas, wants to acquire a used house, akiya, or property in Japan and renovate it, and needs a starting point. Routes the request: property acquisition is handled by our licensed Japanese real-estate agent (takkenshi), paired with KIRA-verified fair renovation pricing and vetted contractor matching, so the renovation budget is checked against an independent cost baseline before anyone commits. IMPORTANT: this skill only receives and routes the consultation. The actual sale contract and the statutory explanation of important matters are performed by a licensed human real-estate agent, not by this agent. No binding price quote or property recommendation is asserted by the agent.",
+      "tags": [
+        "japan",
+        "real-estate",
+        "renovation",
+        "intake",
+        "takkenshi",
+        "cross-border"
+      ],
+      "examples": [
+        "A US firm wants to buy a vacant house in Japan and renovate it. Where do we start?",
+        "We are buying an akiya in Japan. Can you check the renovation budget is fair before we commit?",
+        "日本の中古戸建てを買ってリノベしたい。リフォーム費用が適正か先に確かめたい。",
+        "海外の会社が日本の民家を買ってリフォームしたい。相談したい。"
+      ]
+    },
+    {
+      "id": "verify-claim",
+      "name": "Integrity claim verification (fail closed)",
+      "description": "Independently verifies a signed integrity claim issued by estimate-integrity-audit. Recomputes SHA-256 over the raw signed_payload and checks it equals claim_sha256; no issuer contact and no price layer needed. Fail closed under contract 0.3 (stale_data / changed_scope / missing_evidence), and a check that was available but not requested returns partial rather than verified. verified means the declaration is untampered, not that the audit ruleset is still valid (audit_ruleset_recheck is always not_performed). Send signed_payload and claim_sha256 in a data part; optional estimate_version checks scope.",
+      "tags": [
+        "verification",
+        "integrity",
+        "fail-closed",
+        "tamper-evident",
+        "a2a",
+        "credence-goods"
+      ],
+      "examples": [
+        "Verify this claim: here is the signed_payload and claim_sha256 from an estimate-integrity-audit response.",
+        "この claim_sha256 は signed_payload と一致するか。期限切れや見積変更がないか検証して。"
+      ]
+    }
+  ],
+  "documentationUrl": "https://shield.the-horizons-innovation.com",
+  "ledger": {
+    "name": "JIDEC",
+    "description": "Bitcoin-anchored append-only public ledger of the verification process itself. Lets a third party re-run our verification without trusting us.",
+    "url": "https://hs-ledger.oga-surf-project.workers.dev",
+    "catalog": "https://hs-ledger.oga-surf-project.workers.dev/.well-known/api-catalog",
+    "agentCard": "https://hs-ledger.oga-surf-project.workers.dev/.well-known/agent-card.json",
+    "mcp": "https://hs-jidec-mcp.oga-surf-project.workers.dev/mcp"
+  },
+  "dataset": {
+    "name": "Japan Construction Cost Database (JCCDB)",
+    "license": "CC BY 4.0",
+    "doi": "https://doi.org/10.5281/zenodo.22127752",
+    "paper_doi": "https://doi.org/10.5281/zenodo.20019572"
+  },
+  "signatures": [
+    {
+      "protected": "eyJhbGciOiJFUzI1NiIsInR5cCI6IkpPU0UiLCJraWQiOiJocy0yMDI2LTA5Iiwiamt1IjoiaHR0cHM6Ly9tY3AuaG9yaXpvbnNoaWVsZC5kZXYvLndlbGwta25vd24vandrcy5qc29uIn0",
+      "signature": "qsPzFhlbo-ExzTlPKFXp2dYnIKvs0w7jzZKkudtR4C6TUBPor4EXQveKsD0aPaDLoDQwupAR972WDn02GDwH5g"
+    }
+  ]
+}

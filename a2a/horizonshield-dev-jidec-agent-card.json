@@ -1,0 +1,110 @@
+{
+  "name": "HORIZON SHIELD JIDEC",
+  "description": "Bitcoin-anchored public verification ledger for construction-estimate audits. Resolves a citation to the exact anchored bytes, recomputes their hash, and reports the Bitcoin anchoring status, so that a third party can confirm a result without trusting HORIZON SHIELD.",
+  "version": "1.1.0",
+  "documentationUrl": "https://ledger.horizonshield.dev/llms.txt",
+  "iconUrl": null,
+  "capabilities": {
+    "streaming": false,
+    "pushNotifications": false,
+    "stateTransitionHistory": false,
+    "extensions": [
+      {
+        "uri": "https://gate.horizonshield.dev/ext/conduct/v1",
+        "description": "Who pays this agent, where its measured conduct record lives, and where to file a witness walk. The specification is served at the URI.",
+        "required": false,
+        "params": {
+          "compensation": {
+            "paid_by": "other",
+            "paid_by_note": "The operator funds this ledger itself, as the cost of making its own conduct checkable. Reading is free. Witness submission is free. No listed party pays, no reader pays, and there is no paid placement.",
+            "referral_fee": false,
+            "listing_fee": false,
+            "success_fee_pct": 0,
+            "disclosure_url": "https://ledger.horizonshield.dev/llms.txt"
+          },
+          "measured_endpoints": [
+            "https://jidec.horizonshield.dev/mcp"
+          ],
+          "conduct_record": "https://gate.horizonshield.dev/history?endpoint=https%3A%2F%2Fjidec.horizonshield.dev%2Fmcp",
+          "verdict_recipe": "https://gate.horizonshield.dev/spec",
+          "witness_intake": "https://ledger.horizonshield.dev/witness",
+          "register": "https://gate.horizonshield.dev/register",
+          "rings": {
+            "spec": "https://github.com/ogasurfproject-jpg/horizon-shield/blob/main/workers/hs-ledger/nenrin/NENRIN_SPEC_v1.md",
+            "spec_sha256": "9ccba2e325fd2a555fcdb2dec519b8c6bf7a669064674846aea98ecfff824e3d",
+            "base": "https://raw.githubusercontent.com/ogasurfproject-jpg/mcp-conduct-register/main/rings/",
+            "path": "<slug>/<YYYY-MM>.json",
+            "slug": "endpoint URL without https://, lower case, every run of characters outside [a-z0-9] replaced by one hyphen, hyphens trimmed at both ends",
+            "ledger": "https://ledger.horizonshield.dev/ledger"
+          }
+        }
+      }
+    ]
+  },
+  "supportedInterfaces": [
+    {
+      "url": "https://ledger.horizonshield.dev/a2a",
+      "protocolBinding": "JSONRPC",
+      "protocolVersion": "1.0"
+    },
+    {
+      "url": "https://ledger.horizonshield.dev/a2a",
+      "protocolBinding": "JSONRPC",
+      "protocolVersion": "0.3"
+    }
+  ],
+  "url": "https://ledger.horizonshield.dev/a2a",
+  "preferredTransport": "JSONRPC",
+  "protocolVersion": "0.3.0",
+  "defaultInputModes": [
+    "text/plain"
+  ],
+  "defaultOutputModes": [
+    "application/json",
+    "text/plain"
+  ],
+  "skills": [
+    {
+      "id": "cite-and-verify",
+      "name": "Cite and independently verify a JIDEC record",
+      "description": "Given a citation (jidec:entry:<n>, jidec:path:<sha>, a bare 64-hex id, or a ledger URL), fetch the anchored bytes, recompute SHA-256, confirm it equals the cited id, and report the Bitcoin anchoring status together with an explicit statement of what the proof does and does not cover.",
+      "tags": [
+        "verification",
+        "provenance",
+        "transparency-log",
+        "bitcoin",
+        "opentimestamps",
+        "construction",
+        "audit",
+        "建設",
+        "積算",
+        "検証"
+      ],
+      "examples": [
+        "jidec:entry:5",
+        "jidec:entry:2",
+        "Verify this JIDEC citation and tell me what it does not prove."
+      ],
+      "inputModes": [
+        "text/plain"
+      ],
+      "outputModes": [
+        "application/json",
+        "text/plain"
+      ]
+    }
+  ],
+  "securitySchemes": {},
+  "security": [],
+  "supportsAuthenticatedExtendedCard": false,
+  "additionalDiscovery": {
+    "apiCatalog": "https://ledger.horizonshield.dev/.well-known/api-catalog",
+    "mcp": "https://jidec.horizonshield.dev/mcp"
+  },
+  "signatures": [
+    {
+      "protected": "eyJhbGciOiJFUzI1NiIsInR5cCI6IkpPU0UiLCJraWQiOiJocy0yMDI2LTA5Iiwiamt1IjoiaHR0cHM6Ly9sZWRnZXIuaG9yaXpvbnNoaWVsZC5kZXYvLndlbGwta25vd24vandrcy5qc29uIn0",
+      "signature": "pX0h9P6z9BoKWoYzDtjhJqL0cH6hTkbD5Pp7_QBPSjdg2G738HhD66j1cHqpXavaKXp2xcJaPY1f1fIFwu_7UQ"
+    }
+  ]
+}

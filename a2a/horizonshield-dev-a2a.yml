@@ -1,0 +1,221 @@
+generated: '2026-09-19'
+method: probed
+source: https://mcp.horizonshield.dev/.well-known/agent-card.json
+card:
+  file: a2a/horizonshield-dev-agent-card.json
+discovery:
+  path: /.well-known/agent-card.json
+  canonical: true
+  host: mcp.horizonshield.dev
+  note: >-
+    Served from the provider's MCP host, which is also the A2A JSON-RPC endpoint the card names (url and both
+    supportedInterfaces[] entries point at https://mcp.horizonshield.dev). The registrable apex horizonshield.dev
+    has NO A/AAAA record on 1.1.1.1, 8.8.8.8 or 9.9.9.9 (NOERROR, ANSWER 0) and carries only identity TXT records
+    ("a2a-registry-verify=a2a_2d0b…" and "v=MCPv1; k=ed25519; p=…", the a2aregistry.org and MCP-registry domain
+    verifications), so there is no apex to probe — every horizonshield.dev surface lives on a subdomain. The same
+    card, byte-identical except for the signatures[] block, is served at
+    https://hs-mcp.oga-surf-project.workers.dev/.well-known/agent-card.json, the Cloudflare Workers origin behind
+    the custom domain and the URL a2aregistry.org lists as wellKnownURI. The legacy /.well-known/agent.json returns
+    a real JSON 404 ({"error":"not_found","known_paths":[…]}, 561 bytes), and a negative-control path
+    (/.well-known/horizonshield-negative-control-7e2a91.json) also 404s, so the 200 is a served document, not a
+    catch-all. Ownership: provider.organization is "The HORIZ音s株式会社" (this company), provider.url and
+    documentationUrl are https://shield.the-horizons-innovation.com, whose JSON-LD Organization node names the same
+    company, the same MCP host, and explicitly disclaims the unrelated cybersecurity products at horizonshield.org /
+    horizonshield.ai.
+x-evidence:
+  fetched: '2026-09-19'
+  url: https://mcp.horizonshield.dev/.well-known/agent-card.json
+  http_status: 200
+  content_type: application/json; charset=utf-8
+  body_bytes: 9940
+  body_parses_as: >-
+    JSON object with AgentCard shape (supportedInterfaces, protocolVersion, name, description, url,
+    preferredTransport, provider, version, capabilities, defaultInputModes, defaultOutputModes, skills,
+    documentationUrl, signatures) plus provider-specific top-level fields compensation, ledger, dataset
+  corroborating_probes:
+  - url: https://hs-mcp.oga-surf-project.workers.dev/.well-known/agent-card.json
+    http_status: 200
+    note: Registry-listed copy (a2aregistry.org wellKnownURI). Identical to the mcp-host copy except it carries no signatures[] block (9631 vs 9940 bytes).
+  - url: https://mcp.horizonshield.dev/.well-known/agent.json
+    http_status: 404
+  - url: https://horizonshield.dev/.well-known/agent-card.json
+    http_status: 0
+    note: Could not resolve host — the apex has no address record on any public resolver.
+  - url: https://shield.the-horizons-innovation.com/.well-known/agent-card.json
+    http_status: 404
+    note: The documentation host (GitHub Pages) serves no card; it returns the GitHub Pages 404 page.
+  - url: https://mcp.horizonshield.dev/
+    method: POST
+    body: '{"jsonrpc":"2.0","id":1,"method":"message/send","params":{"message":{"role":"user","parts":[{"kind":"text","text":"ping"}],"messageId":"apievangelist-probe-1"}}}'
+    http_status: 200
+    response: 'Task object {"kind":"task","id":"979a8040-…","status":{"state":"completed","message":{"role":"agent","parts":[{"kind":"text","text":"HORIZON SHIELD KIRA / 見積もり誠実性監査 … No known high-pressure tactic matched …"}]}}}'
+    note: A real A2A message/send responder on the same URL as the MCP server — the probe text "ping" was run through the red-flag skill and a completed Task came back. Nothing was purchased and no ledger record is created by this skill.
+  - url: https://mcp.horizonshield.dev/
+    method: POST
+    body: '{"jsonrpc":"2.0","id":1,"method":"tasks/get","params":{"id":"apievangelist-nonexistent-probe"}}'
+    http_status: 200
+    response: '{"jsonrpc":"2.0","id":6,"error":{"code":-32601,"message":"Method not found: tasks/get"}}'
+    note: tasks/get is not implemented; the sibling gate and JIDEC agents say so explicitly ("This agent implements SendMessage (1.0) and message/send (0.3)").
+  - url: https://mcp.horizonshield.dev/.well-known/jwks.json
+    http_status: 200
+    note: 'JWKS with one EC P-256 key, kid hs-2026-09, alg ES256, use sig — the key the card''s signatures[0] protected header names via jku.'
+  - url: https://a2aregistry.org/api/agents?search=HORIZON
+    http_status: 200
+    note: The card entered the harvest backlog as one of 415 agents on a2aregistry.org (author "The HORIZ音s株式会社"). The registry was the lead; the card above was fetched from the provider's own host.
+agent_card:
+  name: HORIZON SHIELD KIRA
+  description: >-
+    An independent, pre-transaction auditor for construction and renovation estimates. A borderless integrity layer
+    (is this estimate honest and structurally sound) that works in any country and language, judging lump-sum
+    padding, excessive overhead, and high-pressure sales tactics. Built on 30 years of field experience by a Japanese
+    master carpenter. Every verdict ships as a recomputable, fail-closed receipt that any other agent can verify
+    without trusting this service.
+  url: https://mcp.horizonshield.dev
+  version: 1.0.0
+  protocol_version: 0.3.0
+  preferred_transport: JSONRPC
+  supported_interfaces:
+  - {url: 'https://mcp.horizonshield.dev', protocolBinding: JSONRPC, protocolVersion: '1.0'}
+  - {url: 'https://mcp.horizonshield.dev', protocolBinding: JSONRPC, protocolVersion: '0.3'}
+  provider:
+    organization: The HORIZ音s株式会社
+    url: https://shield.the-horizons-innovation.com
+  capabilities:
+    streaming: false
+    push_notifications: false
+    state_transition_history: false
+    extensions:
+    - uri: https://gate.horizonshield.dev/ext/conduct/v1
+      required: false
+      description: A2A Conduct Extension v1 — who pays this agent (paid_by buyer, referral_fee false, listing_fee false, success_fee_pct 0), where its measured conduct record lives, and where to file a witness walk. Authored and served by this provider.
+  default_input_modes: [text/plain, application/json]
+  default_output_modes: [application/json, text/plain]
+  security_schemes: null
+  security: null
+  documentation_url: https://shield.the-horizons-innovation.com
+  icon_url: null
+  signatures: 1 JWS (ES256, kid hs-2026-09, jku https://mcp.horizonshield.dev/.well-known/jwks.json)
+  skill_count: 3
+  skills:
+  - {id: estimate-integrity-audit, name: Estimate integrity audit (borderless), tags: [construction, estimate, audit, fraud-detection, credence-goods, borderless, price-verification, overcharge-detection, second-opinion, planning-stage], examples: 15}
+  - {id: japan-property-reform-intake, name: Japan property acquisition and renovation intake, tags: [japan, real-estate, renovation, intake, takkenshi, cross-border], examples: 4}
+  - {id: verify-claim, name: Integrity claim verification (fail closed), tags: [verification, integrity, fail-closed, tamper-evident, a2a, credence-goods], examples: 2}
+  provider_specific_fields:
+    compensation: {paid_by: buyer, referral_fee: false, listing_fee: false, success_fee_pct: 0, disclosure_url: 'https://shield.the-horizons-innovation.com/verify-directory/'}
+    ledger: {name: JIDEC, url: 'https://hs-ledger.oga-surf-project.workers.dev', catalog: 'https://hs-ledger.oga-surf-project.workers.dev/.well-known/api-catalog', mcp: 'https://hs-jidec-mcp.oga-surf-project.workers.dev/mcp'}
+    dataset: {name: Japan Construction Cost Database (JCCDB), license: CC BY 4.0, doi: 'https://doi.org/10.5281/zenodo.22127752'}
+conformance:
+  spec: A2A 1.0.0
+  grade: conformant
+  protocol_version: '0.3.0'
+  preferred_transport: JSONRPC
+  hard_checks:
+    capabilities_is_object: true
+    protocol_version_present: true
+    skills_is_array: true
+  optional_fields:
+    default_input_modes: true
+    default_output_modes: true
+    preferred_transport: true
+  grade_basis: >-
+    capabilities is an OBJECT (streaming, pushNotifications, stateTransitionHistory, extensions[]); protocolVersion
+    "0.3.0" is present at the top level; skills is an ARRAY of three fully-populated skills (id, name, description,
+    tags, examples). All three optional discriminators are present. The card carries BOTH the 0.3.0 triple
+    (url + preferredTransport + protocolVersion) and a 1.0-style supportedInterfaces[] block declaring JSONRPC at
+    protocolVersion 1.0 and 0.3, so a reader written against either revision finds its fields. It is signed (JWS
+    ES256) with a key resolvable from the same host's /.well-known/jwks.json.
+  deviations:
+  - field: securitySchemes / security
+    observed: absent
+    note: The agent is anonymous by design (the MCP server, the plugin README and the site all say "no API key"); the card does not say so in the A2A vocabulary, so a client cannot read the auth posture from securitySchemes.
+  - field: url / supportedInterfaces[].url
+    observed: https://mcp.horizonshield.dev — the same URL as the MCP Streamable HTTP endpoint
+    note: One JSON-RPC URL multiplexes MCP methods (initialize, tools/list, tools/call, prompts/*) and A2A methods (message/send). Verified live for both. tasks/get and agent/getAuthenticatedExtendedCard return -32601.
+  - field: compensation / ledger / dataset
+    observed: provider-specific top-level fields
+    note: Not in the A2A schema. compensation duplicates the conduct extension's params so a reader that ignores extensions still sees who pays; ledger and dataset point at the JIDEC ledger and the CC BY 4.0 JCCDB dataset (DOI). The ledger URLs here are the workers.dev origins; the custom domains https://ledger.horizonshield.dev and https://jidec.horizonshield.dev/mcp serve the same services.
+  - field: skills[].inputModes / outputModes / security
+    observed: absent on every skill
+    note: Optional per-skill fields; the card relies on the defaults (text/plain, application/json).
+additional_cards:
+  note: >-
+    The provider serves five more A2A agent cards on its own subdomains, each with the same JWS key id and the same
+    conduct extension. All were fetched 2026-09-19, saved verbatim, and graded against the same hard checks. Two of
+    the hosts the register also lists (p001 / p002.horizonshield.dev) serve cards whose provider.organization is a
+    Yakumo member CONTRACTOR (リフォーム職人株式会社, ミネオトーヨー住器株式会社), not this company — HORIZON SHIELD hosts them
+    as its "WebMCP Partner" tier — so they are noted here and not saved as this provider's cards.
+  cards:
+  - file: a2a/horizonshield-dev-jidec-agent-card.json
+    source: https://ledger.horizonshield.dev/.well-known/agent-card.json
+    http_status: 200
+    bytes: 4464
+    name: HORIZON SHIELD JIDEC
+    version: 1.1.0
+    protocol_version: '0.3.0'
+    url: https://ledger.horizonshield.dev/a2a
+    skills: 1
+    grade: conformant
+    signed: true
+    notes: >-
+      Declares securitySchemes {} and security [] explicitly, supportsAuthenticatedExtendedCard false, and an
+      additionalDiscovery block pointing at the RFC 9727 api-catalog and the MCP endpoint https://jidec.horizonshield.dev/mcp.
+      A second copy at https://jidec.horizonshield.dev/.well-known/agent-card.json (200, 5076 bytes) names
+      https://jidec.horizonshield.dev/a2a as its interface. POST tasks/get on /a2a returns -32601 with the
+      message "This agent implements SendMessage (1.0) and message/send (0.3); send a JIDEC citation as a text part."
+  - file: a2a/horizonshield-dev-gate-agent-card.json
+    source: https://gate.horizonshield.dev/.well-known/agent-card.json
+    http_status: 200
+    bytes: 4090
+    name: MCP Verification Gate
+    version: 0.4.7
+    protocol_version: '0.3.0'
+    url: https://gate.horizonshield.dev/a2a
+    skills: 2
+    grade: conformant
+    signed: true
+    notes: The card is also declared as a path in the gate's own OpenAPI (GET /.well-known/agent-card.json). POST tasks/get on /a2a returns -32601 naming SendMessage (1.0) and message/send (0.3).
+  - file: a2a/horizonshield-dev-yakumo-agent-card.json
+    source: https://hearing.horizonshield.dev/.well-known/agent-card.json
+    http_status: 200
+    bytes: 2589
+    name: HORIZON SHIELD YAKUMO
+    version: null
+    protocol_version: '0.3.0'
+    url: https://hearing.horizonshield.dev/mcp
+    skills: 1
+    grade: conformant
+    signed: false
+    notes: 'Passes every hard and optional check but omits version and points url at the MCP endpoint; its conduct extension declares paid_by seller / listing_fee true — the one surface in the family that is seller-funded (the Yakumo mall membership plans).'
+  - file: a2a/horizonshield-dev-femtech-agent-card.json
+    source: https://femtech.horizonshield.dev/.well-known/agent-card.json
+    http_status: 200
+    bytes: 5595
+    name: HORIZON SHIELD Femtech Registry
+    version: 0.4.1
+    protocol_version: '0.3.0'
+    url: https://femtech.horizonshield.dev/a2a
+    skills: 2
+    grade: conformant
+    signed: true
+    notes: A second product line (neutral femtech information-source registry) run by the same company; carries extra top-level fields (protocol, role, mcp_endpoint, discovery, medical_disclaimer).
+  - file: a2a/horizonshield-dev-webmcp-agent-card.json
+    source: https://web.horizonshield.dev/.well-known/agent-card.json
+    http_status: 200
+    bytes: 4425
+    name: 'HORIZON SHIELD: Construction Estimate Auditor for Japan (KIRA)'
+    version: 1.0.4
+    protocol_version: null
+    url: null
+    skills: 5
+    grade: flavored
+    signed: false
+    notes: 'Fails the protocolVersion hard check and has no url / supportedInterfaces / preferredTransport / default modes; it is a WebMCP intake descriptor wearing the agent-card path (keys: capabilities, protocol, name, provider, description, compensation, version, role, skills, bridges_to, how_to_connect, site). skills[] entries are the five MCP tool names without ids.'
+surface_relationship:
+  note: >-
+    One company, one signing key (kid hs-2026-09, one JWKS per host), six agent cards. KIRA (mcp.) is the product:
+    price audit + verifiable receipts + AP2 attestation. JIDEC (ledger./jidec.) is the audit-of-the-auditor: an
+    append-only, Bitcoin-anchored ledger with an RFC 9727 api-catalog. The gate (gate.) is a public conformance
+    register for OTHER people's MCP servers, with the only OpenAPI in the family. Yakumo (hearing.) is the verified
+    contractor directory. WebMCP (web.) is an intake desk. Femtech (femtech.) is a separate registry product. Every
+    card declares the same A2A Conduct Extension, whose specification the company itself serves at
+    https://gate.horizonshield.dev/ext/conduct/v1 — see conformance/horizonshield-dev-conformance.yml.

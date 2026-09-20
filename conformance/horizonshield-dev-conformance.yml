@@ -1,0 +1,131 @@
+generated: '2026-09-19'
+method: searched
+source: https://mcp.horizonshield.dev/.well-known/agent-card.json
+derived_from: openapi/horizonshield-dev-mcp-conduct-register-openapi.json
+docs:
+- https://ledger.horizonshield.dev/llms.txt
+- https://gate.horizonshield.dev/spec
+- https://gate.horizonshield.dev/ext/conduct/v1
+- https://mcp.horizonshield.dev/.well-known/verification-contract.json
+summary: >-
+  HORIZON SHIELD's conformance profile is the agent-protocol stack plus the IETF discovery RFCs, and it is unusually
+  candid about where it stops. Observed on its own hosts: A2A 0.3.0 cards (six, JWS-signed with a JWKS key),
+  MCP 2025-06-18 Streamable HTTP, JSON-RPC 2.0, an RFC 9727 API catalog served as application/linkset+json, RFC 9116
+  security.txt on two hosts, RFC 7517 JWKS, OpenAPI 3.1.0, an AP2 (Agent Payments Protocol) attestation bridge, and
+  an A2A extension the company AUTHORS and serves itself (the Conduct Extension v1, declared by every card in the
+  family and by third-party cards on its register). Its ledger uses SCITT vocabulary and states in three places that
+  it is NOT a conformant SCITT transparency service and that OpenTimestamps has no RFC/ISO/eIDAS standing. No OAuth,
+  OIDC, RFC 9728 or RFC 9457.
+standards:
+- id: a2a
+  name: Agent2Agent protocol
+  version: '0.3.0'
+  conforms: true
+  evidence: >-
+    a2a/horizonshield-dev-agent-card.json — protocolVersion "0.3.0", url https://mcp.horizonshield.dev,
+    preferredTransport JSONRPC, supportedInterfaces[] for 1.0 and 0.3, capabilities object, skills[] of 3; POST
+    message/send on that URL returned a completed Task object. Five sibling cards on gate., ledger., hearing.,
+    femtech. and web. (four conformant, one flavored). Graded in a2a/horizonshield-dev-a2a.yml.
+- id: a2a-conduct-extension
+  name: A2A Conduct Extension v1 (provider-authored)
+  version: v1
+  conforms: true
+  domain_standard_signature: true
+  evidence: >-
+    Every card declares capabilities.extensions[].uri = https://gate.horizonshield.dev/ext/conduct/v1 with params
+    {compensation: {paid_by, referral_fee, listing_fee, success_fee_pct, disclosure_url}, measured_endpoints,
+    conduct_record, verdict_recipe, witness_intake, register, rings}. The specification is served at that URI (200,
+    12,518 bytes: "A2A Conduct Extension … data-only extension on the A2A Agent Card, plus an optional
+    request-level echo") and is declared as GET /ext/conduct/v1 in the gate OpenAPI. The gate register measures
+    9 endpoints against it and the ledger anchors witness walks of it.
+  note: The company is the author of this extension, not merely an implementer; the contract-level signature is the extension URI in the card.
+- id: mcp
+  name: Model Context Protocol
+  version: '2025-06-18'
+  conforms: true
+  evidence: 'POST https://mcp.horizonshield.dev/ initialize -> protocolVersion "2025-06-18", serverInfo {horizon-shield, 1.0.9}; tools/list -> 15 tools each with inputSchema, outputSchema and annotations (readOnlyHint/destructiveHint/openWorldHint); prompts/list -> 5. GET returns 405 with Allow: POST as the Streamable HTTP spec requires of a server that opens no SSE stream. web./hearing. also 2025-06-18; femtech. negotiates 2024-11-05.'
+- id: mcp-registry-dns-verification
+  name: MCP registry namespace verification (DNS)
+  conforms: true
+  evidence: 'horizonshield.dev TXT "v=MCPv1; k=ed25519; p=7fwx4Ib4DBGNd+0Yi34/nXEJZ6nFYOoudUR1gA/TwHc="; registry.modelcontextprotocol.io lists dev.horizonshield/horizon-shield 1.0.9 with remote streamable-http https://mcp.horizonshield.dev/mcp.'
+- id: json-rpc-2.0
+  conforms: true
+  evidence: 'All MCP and A2A endpoints answer {"jsonrpc":"2.0",…}; unimplemented methods return -32601 with a descriptive message ("This agent implements SendMessage (1.0) and message/send (0.3)…").'
+- id: rfc9727-api-catalog
+  name: RFC 9727 API Catalog
+  conforms: true
+  domain_standard_signature: true
+  evidence: 'GET https://ledger.horizonshield.dev/.well-known/api-catalog -> 200 application/linkset+json; charset=utf-8, a linkset with one anchor and ten items (saved to well-known/horizonshield-dev-api-catalog.json). The JIDEC card''s additionalDiscovery.apiCatalog and the ledger root discovery block both point at it.'
+- id: rfc9116-security-txt
+  name: RFC 9116 security.txt
+  conforms: true
+  evidence: 'gate.horizonshield.dev/.well-known/security.txt (Contact, Preferred-Languages, Canonical, Policy — no Expires) and ledger.horizonshield.dev/.well-known/security.txt (Contact, Expires 2027-07-26, Preferred-Languages, Canonical, Policy). Absent on mcp., the docs host and the (unresolvable) apex.'
+  gaps: [The gate file omits the mandatory Expires field.]
+- id: rfc8615-well-known
+  conforms: true
+  evidence: agent-card.json, jwks.json, api-catalog, security.txt and provider-defined documents all under /.well-known/ on their respective hosts; see well-known/horizonshield-dev-well-known.yml.
+- id: rfc7517-jwks
+  name: JSON Web Key Set / JWS (RFC 7515/7517)
+  conforms: true
+  evidence: '/.well-known/jwks.json on mcp., gate., ledger. and femtech. (one EC P-256 key, kid hs-2026-09, alg ES256, use sig). Card signatures[0].protected decodes to {"alg":"ES256","typ":"JOSE","kid":"hs-2026-09","jku":"https://<host>/.well-known/jwks.json"}. Signature validity was not verified by this pipeline.'
+- id: openapi-3.1
+  conforms: true
+  version: 3.1.0
+  evidence: 'https://gate.horizonshield.dev/openapi.json — openapi "3.1.0", info.title "MCP conduct register", info.version 0.4.7, servers[0] https://gate.horizonshield.dev, info.contact.url https://shield.the-horizons-innovation.com/verify-directory/, license MIT; 25 operations across 25 paths.'
+  gaps:
+  - No operationId on any operation.
+  - No components.schemas — every response is 200 with an untyped application/json body.
+  - No error responses declared; no securitySchemes (the API is anonymous, but the spec does not say so).
+- id: ap2
+  name: Agent Payments Protocol (Google AP2) — FairPriceAttestation bridge
+  conforms: true
+  verification: partial
+  domain_standard_signature: true
+  evidence: >-
+    MCP tool create_ap2_fairness_attestation ("issues a FairPriceAttestation that a shopping or payments agent can
+    attach to a Cart Mandate before asking the user to sign. AP2 mandates make authorization verifiable; this
+    attestation makes value verifiable"), prompt ap2_cart_fairness, CITATION.cff and llms.txt all declare it. The
+    tool was NOT invoked (each call appends a public ledger record), so the attestation's shape against the AP2
+    Cart Mandate schema is recorded on the provider's declaration, not observed.
+- id: opentimestamps
+  name: OpenTimestamps (Bitcoin anchoring)
+  conforms: true
+  evidence: 'verification-contract.json timestamp_anchor {type PTKA, chain bitcoin, method OpenTimestamps, block 949356}; GET https://ledger.horizonshield.dev/ledger lists 49 entries with ots_status confirmed and bitcoin_block; /ledger/{n}/ots serves the proof. The provider itself notes OpenTimestamps "has no RFC, no ISO, no ETSI status and no standing under eIDAS".'
+- id: scitt
+  name: IETF SCITT transparency service (RFC 9943 vocabulary)
+  conforms: false
+  claimed: false
+  evidence: 'The ledger root descriptor states: "NOT a conformant SCITT Transparency Service. Statements are canonical JSON rather than COSE_Sign1 and receipts are OpenTimestamps proofs rather than COSE receipts. The vocabulary is used because the shape is the same, not because conformance is claimed." Repeated in llms.txt and the verification contract.'
+  note: Recorded as an explicit, provider-stated non-conformance — a self-declared negative, which is rarer and more useful than a silent absence.
+- id: nip-01-bip340
+  name: Nostr NIP-01 event id / BIP340 Schnorr signature verification
+  conforms: true
+  evidence: OpenAPI POST /verify-event "Recompute a NIP-01 event id and verify its BIP340 signature". Not invoked.
+- id: did-key
+  name: did:key identifiers
+  conforms: true
+  verification: documented
+  evidence: 'README "Task-bound conduct" section: witness_sig and edge_sig keys "live inside the did:key identifiers"; live records at https://ledger.horizonshield.dev/witness/task?task_id=… (not fetched).'
+- id: content-signals
+  name: Cloudflare Content Signals (robots.txt)
+  conforms: false
+  evidence: 'https://mcp.horizonshield.dev/robots.txt carries only the Content Signals explanatory preamble (comment lines); it contains no User-agent group and no Content-Signal directive, so no preference is expressed. The docs host robots.txt explicitly Allows AI crawlers by name instead.'
+- id: cc-by-4.0-open-data
+  name: Creative Commons BY 4.0 dataset licence with DOI (DataCite/Zenodo)
+  conforms: true
+  evidence: 'Card dataset block: JCCDB, license CC BY 4.0, doi https://doi.org/10.5281/zenodo.22127752; Hugging Face ogasurfproject/jccdb tags license:cc-by-4.0, library:mlcroissant; CITATION.cff 1.2.0 at the docs host root; ORCID 0009-0000-9180-903X for the supervising author.'
+- id: oauth2
+  conforms: false
+  evidence: No oauth2 securityScheme anywhere; /.well-known/oauth-authorization-server 404 on every host. All surfaces are anonymous by design.
+- id: oidc
+  conforms: false
+  evidence: /.well-known/openid-configuration 404 on every host.
+- id: rfc9728-protected-resource
+  conforms: false
+  evidence: /.well-known/oauth-protected-resource 404 on mcp., gate., ledger., hs-mcp and hs-ledger origins — the MCP resource hosts publish no protected-resource metadata (consistent with needing no auth).
+- id: rfc9457-problem-details
+  conforms: false
+  evidence: 'Errors are {"error":"not_found","path":…,"message":…,"known_paths":[…]} or {"ok":false,"error":"method_not_allowed","detail":…} in application/json — descriptive, but not application/problem+json. See errors/horizonshield-dev-problem-types.yml.'
+- id: rfc8594-sunset
+  conforms: false
+  evidence: No Sunset or Deprecation header observed; the one documented retirement (legacy /sse, 2026-08-14) is announced in the 405 body text.

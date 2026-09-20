@@ -1,0 +1,67 @@
+generated: '2026-09-19'
+method: derived
+source: live responses from mcp.horizonshield.dev, gate.horizonshield.dev, ledger.horizonshield.dev and jidec.horizonshield.dev (2026-09-19) + mcp/horizonshield-dev-mcp-tools.json outputSchemas + well-known/horizonshield-dev-verification-contract.json
+derived_from: openapi/horizonshield-dev-mcp-conduct-register-openapi.json
+format: json
+rfc9457: false
+summary: >-
+  The OpenAPI declares only 200 responses, so the error catalog is derived from what the servers actually return.
+  Three layers: (1) HTTP-level JSON envelopes for unknown paths / wrong methods / missing parameters, each of which
+  names the correct endpoint and lists the known paths; (2) JSON-RPC 2.0 error objects (-32601) for unimplemented
+  MCP/A2A methods; (3) tool-level semantics — MCP tools return isError: true when a source could not be read, and
+  never conflate that with an empty result (lookup: absent, count: 0); the verification contract defines a
+  fail-closed result/failure_reason taxonomy for receipt verification.
+http_errors:
+- status: 404
+  code: not_found
+  hosts: [mcp.horizonshield.dev, gate.horizonshield.dev]
+  example: '{"error":"not_found","path":"/openapi.json","message":"No such path on this server. The MCP endpoint is https://mcp.horizonshield.dev/ (POST JSON-RPC 2.0).","endpoint":"https://mcp.horizonshield.dev/","transport":"MCP over Streamable HTTP (JSON-RPC 2.0)","known_paths":["/","/health","/icon.png","/ledger/<claim_sha256>","/.well-known/agent-card.json","/.well-known/verification-contract.json","/.well-known/glama.json","/.well-known/jwks.json","/.well-known/usage-stats.json"]}'
+  remediation: Use a listed path; the body is self-documenting.
+- status: 404
+  code: not found
+  hosts: [ledger.horizonshield.dev]
+  example: '{"error":"not found","routes":["/ledger","/ledger/{n}","/ledger/{n}/ots"]}'
+- status: 405
+  code: method_not_allowed
+  hosts: [mcp.horizonshield.dev (GET / , /mcp), jidec.horizonshield.dev (GET /mcp), web./hearing. (GET /mcp, text/plain)]
+  example: 'GET https://mcp.horizonshield.dev/ -> 405 with Allow: POST and a JSON body carrying server identity, usage and the tool list; GET /sse -> {"error":"sse_not_supported","message":"This server does not implement the legacy SSE transport … Until 2026-08-14 this path answered 200 with server metadata, which made SSE clients reconnect in a loop … That was our bug, not yours."}'
+  remediation: POST JSON-RPC 2.0 to the same URL.
+- status: 400
+  code: endpoint_required
+  hosts: [gate.horizonshield.dev]
+  example: '{"error":"endpoint_required","usage":"/is-verified?endpoint=https://your-server/mcp","note":"Reads the register. verified is true only for a full pass, null otherwise (never false)."}'
+- status: 400
+  code: endpoint (https URL) required
+  hosts: [gate.horizonshield.dev]
+  example: '{"error":"endpoint (https URL) required","example":"/register/lookup?endpoint=https%3A%2F%2Fmcp.horizonshield.dev%2Fmcp"}'
+jsonrpc_errors:
+- code: -32601
+  message: 'Method not found: <method>'
+  observed_on: [mcp.horizonshield.dev (resources/list, tasks/get, agent/getAuthenticatedExtendedCard), gate.horizonshield.dev/a2a (tasks/get), jidec.horizonshield.dev/a2a (tasks/get)]
+  note: The A2A endpoints extend the message with the methods they DO implement ("SendMessage (1.0) and message/send (0.3)") and what to send.
+tool_result_semantics:
+  source: outputSchema on every KIRA tool (mcp/horizonshield-dev-mcp-tools.json) and the JIDEC tools
+  rules:
+  - 'lookup: "ok" = source read and something matched; "absent" = source read and nothing matched.'
+  - 'A source that could NOT be read never appears as a result — the tool returns isError: true, so a server failure is never mistaken for "nothing exists".'
+  - 'count: 0 means read-and-empty, never could-not-read.'
+  - 'audit_estimate / get_price_range: no match -> did_you_mean candidates; ambiguous candidates -> "ambiguous" instead of a verdict; unit-vs-total confusion -> unit_mismatch guidance.'
+  - 'find_verified_contractor / Yakumo tools: zero matches are returned as zero; stores still in verification are returned separately as pending.'
+verification_failure_taxonomy:
+  source: well-known/horizonshield-dev-verification-contract.json (contract 0.3) — also the return contract of verify_integrity_claim
+  result_values:
+    verified: every check available for this call ran and passed
+    partial: nothing failed, but at least one available check was not requested (skipped_because_not_requested)
+    unverified: a check failed, or the claim could not be recomputed
+  failure_reasons:
+  - {reason: stale_data, user_meaning: recheck later, triggers: [expired_declaration]}
+  - {reason: changed_scope, user_meaning: re-audit required, triggers: [changed_estimate_version]}
+  - {reason: missing_evidence, user_meaning: do not trust, triggers: [missing_receipt, unverifiable_chain]}
+  policy: 'Fail closed. If the claim cannot be recomputed or the chain cannot be verified, the result is unverified. Never a soft pass.'
+gate_verdict_states:
+  source: https://gate.horizonshield.dev/is-verified and the mcp-conduct README
+  states: {verified: 'latest scheduled measurement passed every measured condition (true)', pending: 'measured, at least one condition did not pass or was not measured (null)', held: 'server or relay unreachable — not a verdict (null)', watched: 'on the register, not measured yet (null)', absent: 'never measured; absence is not a negative verdict (null)'}
+  note: verified is true or null, never false.
+openapi_declared_errors:
+  count: 0
+  note: openapi/horizonshield-dev-mcp-conduct-register-openapi.json declares a single 200 response on all 25 operations and no 4xx/5xx.

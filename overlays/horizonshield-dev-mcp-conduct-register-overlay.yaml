@@ -1,0 +1,90 @@
+overlay: 1.0.0
+info:
+  title: API Evangelist enhancements — HORIZON SHIELD MCP conduct register
+  version: 1.0.0
+  x-generated: '2026-09-19'
+  x-method: generated
+  x-source: openapi/horizonshield-dev-mcp-conduct-register-openapi.json
+  x-note: >-
+    Non-destructive overlay. The original spec (verbatim from https://gate.horizonshield.dev/openapi.json, OpenAPI
+    3.1.0, version 0.4.7) declares no operationIds, no tags, no schemas, no error responses and no security. This
+    overlay adds stable operationIds, tags grouped by capability, an explicit empty security array (the API is
+    anonymous, as its own description states), links to the provider's discovery documents, and the observed 400/404
+    error envelopes. It never edits the provider's own fields.
+extends: horizonshield-dev-mcp-conduct-register-openapi.json
+actions:
+- target: $.info
+  update:
+    x-apievangelist:
+      provider: horizonshield-dev
+      website: https://shield.the-horizons-innovation.com/
+      agent_card: https://gate.horizonshield.dev/.well-known/agent-card.json
+      conduct_extension: https://gate.horizonshield.dev/ext/conduct/v1
+      security_txt: https://gate.horizonshield.dev/.well-known/security.txt
+      jwks: https://gate.horizonshield.dev/.well-known/jwks.json
+      mcp_endpoint: https://gate.horizonshield.dev/mcp
+      a2a_endpoint: https://gate.horizonshield.dev/a2a
+      client_library: https://www.npmjs.com/package/mcp-conduct
+- target: $
+  update:
+    security: []
+    tags:
+    - {name: register, description: The public register of measured MCP endpoints and its feeds}
+    - {name: measurement, description: Requesting and reading measurements of one endpoint}
+    - {name: verification, description: Recomputing verdict hashes and signatures}
+    - {name: badges, description: Badges and embeddable verification envelopes}
+    - {name: meta, description: The gate's own conditions, health, self-measurement and discovery}
+- target: $.paths['/register'].get
+  update: {operationId: listRegister, tags: [register]}
+- target: $.paths['/verified.json'].get
+  update: {operationId: listVerified, tags: [register]}
+- target: $.paths['/history'].get
+  update: {operationId: getEndpointHistory, tags: [measurement]}
+- target: $.paths['/changes'].get
+  update: {operationId: listChanges, tags: [register]}
+- target: $.paths['/feed.xml'].get
+  update: {operationId: getChangesAtom, tags: [register]}
+- target: $.paths['/sitemap.xml'].get
+  update: {operationId: getSitemap, tags: [register]}
+- target: $.paths['/e/{host}{path}'].get
+  update: {operationId: getEndpointPage, tags: [register]}
+- target: $.paths['/badge'].get
+  update: {operationId: getBadge, tags: [badges]}
+- target: $.paths['/embed'].get
+  update: {operationId: getEmbed, tags: [badges]}
+- target: $.paths['/badge/seal'].get
+  update: {operationId: getBadgeSeal, tags: [badges]}
+- target: $.paths['/spec'].get
+  update: {operationId: getConditions, tags: [meta]}
+- target: $.paths['/ext/conduct/v1'].get
+  update: {operationId: getConductExtension, tags: [meta]}
+- target: $.paths['/self'].get
+  update: {operationId: getSelfMeasurement, tags: [meta]}
+- target: $.paths['/health'].get
+  update: {operationId: getHealth, tags: [meta]}
+- target: $.paths['/recompute'].post
+  update: {operationId: recomputeHash, tags: [verification]}
+- target: $.paths['/verify-event'].post
+  update: {operationId: verifyNostrEvent, tags: [verification]}
+- target: $.paths['/mould'].get
+  update: {operationId: listMould, tags: [meta]}
+- target: $.paths['/sweep/last'].get
+  update: {operationId: getLastSweep, tags: [meta]}
+- target: $.paths['/nenrin/window'].get
+  update: {operationId: getNenrinWindow, tags: [meta]}
+- target: $.paths['/register/lookup'].get
+  update:
+    operationId: lookupEndpoint
+    tags: [measurement]
+    responses:
+      '400': {description: 'endpoint (https URL) required — observed: {"error":"endpoint (https URL) required","example":"/register/lookup?endpoint=https%3A%2F%2Fmcp.horizonshield.dev%2Fmcp"}'}
+- target: $.paths['/watchlist'].get
+  update: {operationId: listWatchlist, tags: [register]}
+- target: $.paths['/.well-known/agent-card.json'].get
+  update: {operationId: getAgentCard, tags: [meta]}
+- target: $.paths['/.well-known/mcp-register.json'].get
+  update: {operationId: getRegisterSummary, tags: [register]}
+- target: $.paths['/check'].post
+  update: {operationId: checkEndpoint, tags: [measurement]}
+- target: $.paths['/mcp'].post
+  update: {operationId: mcpJsonRpc, tags: [meta]}

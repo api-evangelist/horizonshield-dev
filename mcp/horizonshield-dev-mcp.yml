@@ -1,0 +1,199 @@
+generated: '2026-09-19'
+method: probed
+status: published
+source: https://mcp.horizonshield.dev/
+docs: https://github.com/ogasurfproject-jpg/horizon-shield#readme
+registry_listings:
+- registry: registry.modelcontextprotocol.io
+  name: dev.horizonshield/horizon-shield
+  version: 1.0.9
+  remote: {type: streamable-http, url: 'https://mcp.horizonshield.dev/mcp'}
+  url: https://registry.modelcontextprotocol.io/v0/servers?search=horizon
+  note: The dev.horizonshield namespace is DNS-verified — the apex horizonshield.dev TXT record "v=MCPv1; k=ed25519; p=7fwx4Ib4DBGNd+0Yi34/nXEJZ6nFYOoudUR1gA/TwHc=" is the MCP registry's domain-ownership proof. A second server.json (io.github.ogasurfproject-jpg/horizon-shield, same remote) is published at https://shield.the-horizons-innovation.com/server.json.
+- registry: glama.ai
+  url: https://glama.ai/mcp/servers/ogasurfproject-jpg/horizon-shield
+  note: /.well-known/glama.json is served on the MCP host (maintainers[0].email ogasurfproject@gmail.com). The Glama API itself is key-gated (401) so the listing was not read here.
+- registry: smithery.ai
+  url: https://smithery.ai/server/oga-surf-project/horizon-shield
+  note: Named in the provider's llms.txt; not probed.
+summary: >-
+  HORIZON SHIELD operates a FAMILY of remote MCP servers on subdomains of horizonshield.dev (the apex resolves to
+  nothing; see well-known/). The flagship is https://mcp.horizonshield.dev/ — POST-only Streamable HTTP, MCP
+  protocol 2025-06-18, serverInfo {horizon-shield, 1.0.9}, anonymous. It answered initialize, tools/list (15 tools,
+  every one with inputSchema AND outputSchema and readOnly/destructive/openWorld annotations), prompts/list (5
+  prompts) and ping without any credential; resources/list returns -32601. GET on / , /mcp and /sse returns a
+  deliberate 405 whose JSON body explains the transport, lists the tools and known paths, and dates the retirement
+  of the legacy SSE path (2026-08-14). The same JSON-RPC URL also answers A2A message/send (see a2a/). Authorship is
+  the provider's own: tool names, bilingual JP/EN descriptions, the JCCDB dataset, the PTKA receipt model and the
+  AP2 attestation bridge match no shared platform fingerprint, and the source is public at
+  github.com/ogasurfproject-jpg/horizon-shield (workers/hs-mcp). Five sibling servers (gate, JIDEC, WebMCP intake,
+  Yakumo, femtech) were probed the same way and are recorded below with their tool lists saved verbatim.
+deployment:
+  mode: both
+  endpoint: https://mcp.horizonshield.dev/
+  install: 'uvx --from "git+https://github.com/ogasurfproject-jpg/horizon-shield#subdirectory=workers/hs-ledger/nenrin/a2a-conduct-walk" conduct-witness-mcp'
+  package: https://github.com/ogasurfproject-jpg/horizon-shield/tree/main/workers/hs-ledger/nenrin/a2a-conduct-walk
+  auth: none
+  verified: probed
+  note: >-
+    The endpoint is a hosted HTTPS URL an MCP client POSTs to directly (the root, /mcp and /sse all accept the same
+    JSON-RPC; the provider's registry entries name /mcp, its gemini-extension.json and lhm.plugin.json name the
+    root). The stdio component is DIFFERENT software: conduct-witness-mcp, a standard-library Python MCP server
+    shipped in the a2a-conduct-walk distribution (pyproject project.scripts; "Also an MCP server
+    (conduct-witness-mcp) so any agent can be a witness in one tool call"), installed with uvx straight from the
+    GitHub subdirectory because it is not on PyPI. It files witness walks on the ledger; it is not a local copy of
+    KIRA. The provider's Claude Code plugin (/plugin marketplace add ogasurfproject-jpg/horizon-shield; /plugin
+    install horizon-shield@the-horizons) bundles a REMOTE connector to the hosted URL plus a skill and three slash
+    commands (/audit, /red-flags, /verify) — a human installs it, but the connection it opens is to the hosted
+    server, so it does not by itself make the mode local. A Gemini CLI extension manifest (https://shield.the-horizons-innovation.com/gemini-extension.json,
+    httpUrl https://mcp.horizonshield.dev) and an LM-Studio-style plugin manifest (/lhm.plugin.json, cloudEndpoint the
+    same URL) are also published. auth is none in the connection sense: initialize and tools/list need nothing and no
+    OAuth metadata is served on the MCP host (/.well-known/oauth-authorization-server and
+    /.well-known/oauth-protected-resource both return the server's real JSON 404).
+servers:
+- id: kira
+  name: HORIZON SHIELD KIRA (horizon-shield)
+  endpoint: https://mcp.horizonshield.dev/
+  aliases: ['https://mcp.horizonshield.dev/mcp', 'https://mcp.horizonshield.dev/sse (accepts POST; GET 405 sse_not_supported)', 'https://hs-mcp.oga-surf-project.workers.dev/ (Workers origin)']
+  transport: streamable-http
+  http_methods: [POST]
+  auth: none
+  status: live
+  authorship: provider
+  probe:
+    fetched: '2026-09-19'
+    initialize:
+      http_status: 200
+      protocol_version: '2025-06-18'
+      server_info: {name: horizon-shield, version: 1.0.9}
+      capabilities: {tools: {}, prompts: {}}
+      instructions_excerpt: >-
+        HORIZON SHIELD: independent, buyer-side fair-price verification for construction and renovation work in
+        Japan (prices in JPY). … Tool order: get_price_range when no quote exists yet …; audit_estimate when the user
+        has a specific quoted amount; check_red_flags for suspicious wording …; verify_fair_price when a
+        hash-verifiable record is needed …; find_verified_contractor when the user asks who to hire … Scope and
+        honesty: Japan only; … when candidates disagree the server returns ambiguous instead of a verdict; the
+        service takes no referral or listing fee from contractors.
+    tools_list: {http_status: 200, content_type: 'application/json; charset=utf-8', tool_count: 15, file: mcp/horizonshield-dev-mcp-tools.json}
+    prompts_list: {http_status: 200, prompt_count: 5, file: mcp/horizonshield-dev-mcp-prompts.json, prompts: [audit_my_estimate, know_fair_price_first, verify_receipt, ap2_cart_fairness, spot_sales_tactics]}
+    resources_list: {http_status: 200, error: '-32601 Method not found: resources/list'}
+    ping: {http_status: 200, result: {}}
+    get_request: {http_status: 405, allow: POST, body_excerpt: '{"server":{"name":"horizon-shield","version":"1.0.9"},"transport":"MCP over Streamable HTTP (JSON-RPC 2.0)","usage":"POST JSON-RPC 2.0 to this URL. methods: initialize, tools/list, tools/call, prompts/list, prompts/get.","sse":"not offered …","tools":[…15…],"site":"https://shield.the-horizons-innovation.com"}'}
+    health: {url: 'https://mcp.horizonshield.dev/health', http_status: 200, body: '{"ok":true,"server":{"name":"horizon-shield","version":"1.0.9"},"checked":{"worker":"running","kv":"reachable"},"not_checked":["data freshness","tool output correctness"]}'}
+    tools_call: {tool: get_agent_card, http_status: 200, note: 'The only tool invoked — read-only, argument-free; it returned the card URL, the verification-contract URL, the provider name and the three skill ids. No price tool and no ledger-appending tool was called.'}
+  tools:
+  - {name: get_jccdb_dataset_info, read_only: true, required: [], description: 'JCCDB dataset metadata: scale (95,403 items), license (CC BY 4.0), download links, citation.'}
+  - {name: list_cost_categories, read_only: true, required: [], description: 'The 61 construction/renovation categories with maintained fair-price ranges and red flags (Japan).'}
+  - {name: search_cost_category, read_only: true, required: [query], description: Find a maintained cost category by work name.}
+  - {name: get_estimate_reading_guide, read_only: true, required: [], description: 'Principles for judging whether an estimate is fair, including the overhead-share guide.'}
+  - {name: get_fair_price_sources, read_only: true, required: [], description: Sources and regional multipliers behind the price layer.}
+  - {name: get_price_range, read_only: true, required: [query], optional: [region], description: 'Fair min/avg/max and the overcharge danger threshold for a work type, regionally adjusted when region is passed.'}
+  - {name: audit_estimate, read_only: true, required: [work, quoted_price], optional: [region], description: 'Judge a quoted JPY price against the fair range: verdict, level (ok/watch/alert), fair_range, danger_threshold, vs_avg_pct, advice, source; did_you_mean on no match; unit_mismatch guidance.'}
+  - {name: preview_reverse_estimate, read_only: true, required: [work, quoted_price], description: Direction of a rough estimate versus the average.}
+  - {name: check_red_flags, read_only: true, required: [text], description: 'Known overcharge and high-pressure tactics in estimate or sales wording (lump sum, today-only discount, free inspection, door-to-door). Language-agnostic.'}
+  - {name: verify_fair_price, read_only: true, required: [work], description: 'A fair price as a SHA-256 tamper-evident receipt with a per-receipt verify_url (https://shield.the-horizons-innovation.com/verify/?id=CLAIM_SHA256) and a JSON copy at /ledger/{claim_sha256}.'}
+  - {name: create_ap2_fairness_attestation, read_only: false, idempotent: false, destructive: false, required: [work], optional: [quoted_price, merchant], description: 'AP2 bridge: issues a FairPriceAttestation shaped to attach to a Google AP2 Cart Mandate. The tool states it initiates, authorizes and executes NO payment and moves no funds; each call APPENDS one record to the public ledger, which is why it is not read-only.'}
+  - {name: suggest_ehn, read_only: true, required: [], description: Guide and submission URL for EHN (Estimate Hacker News), the free anonymous third-party review board.}
+  - {name: get_agent_card, read_only: true, required: [], description: A2A discovery — returns the card URL, verification contract URL, provider and skill ids.}
+  - {name: verify_integrity_claim, read_only: true, required: [signed_payload, claim_sha256], optional: [estimate_version], description: 'Independently recompute a signed verdict, fail closed: result verified / partial / unverified with failure_reason (stale_data / changed_scope / missing_evidence) per verification contract 0.3.'}
+  - {name: find_verified_contractor, read_only: true, required: [], optional: [area, work], description: 'Verification-passed contractors on Yakumo; scores and tiers, never prices; pending stores returned separately; returns 0 honestly.'}
+  output_contract_note: >-
+    Every tool declares an outputSchema. Read tools share a convention worth recording because agents can act on
+    it: `lookup` is "ok" or "absent", `source_read` is true on every successful result, `count` 0 means the source
+    was read and nothing matched, and a source that could NOT be read never returns a result at all — it returns
+    isError: true. Price answers additionally carry provenance (dataset version, curator, sources), next_calls (the
+    next tool with arguments pre-filled) and next_actions.
+- id: gate
+  name: MCP Verification Gate (MCP conduct register)
+  endpoint: https://gate.horizonshield.dev/mcp
+  transport: streamable-http
+  http_methods: [POST]
+  auth: none
+  status: live
+  authorship: provider
+  openapi: openapi/horizonshield-dev-mcp-conduct-register-openapi.json
+  probe:
+    fetched: '2026-09-19'
+    tools_list: {http_status: 200, tool_count: 5, file: mcp/horizonshield-dev-gate-mcp-tools.json}
+    tools: [get_conditions, check_conformance, verify_verdict, lookup_server, is_verified]
+    note: 'Every tool is annotated readOnlyHint true; check_conformance is idempotentHint false because it triggers a live measurement of the named endpoint. POST /mcp is also declared as a path in the gate''s OpenAPI ("The same register over MCP").'
+- id: jidec
+  name: HORIZON SHIELD JIDEC (read-only ledger MCP)
+  endpoint: https://jidec.horizonshield.dev/mcp
+  aliases: ['https://hs-jidec-mcp.oga-surf-project.workers.dev/mcp (Workers origin)']
+  transport: streamable-http
+  http_methods: [POST]
+  auth: none
+  status: live
+  authorship: provider
+  probe:
+    fetched: '2026-09-19'
+    tools_list: {http_status: 200, tool_count: 4, file: mcp/horizonshield-dev-jidec-mcp-tools.json}
+    tools: [jidec_cite, jidec_replay, jidec_list_paths, jidec_how_to_verify]
+    get_request: {http_status: 405, body: '{"ok":false,"error":"method_not_allowed","detail":"This MCP endpoint is stateless and offers no server-initiated SSE stream. Use POST."}'}
+    note: 'With Accept: application/json, text/event-stream the server answers as an SSE frame (event: message / data: {...}); with Accept: application/json it answers plain JSON. All four tools are readOnlyHint + idempotentHint true.'
+- id: webmcp
+  name: HORIZON SHIELD WebMCP intake (hs-webmcp)
+  endpoint: https://web.horizonshield.dev/mcp
+  transport: streamable-http
+  http_methods: [POST]
+  auth: none
+  status: live
+  authorship: provider
+  registry: 'server.json at https://shield.the-horizons-innovation.com/server-webmcp.json (io.github.ogasurfproject-jpg/horizon-shield-webmcp, 1.0.0)'
+  probe:
+    fetched: '2026-09-19'
+    initialize: {http_status: 200, protocol_version: '2025-06-18', server_info: {name: hs-webmcp, title: HORIZON SHIELD WebMCP (KIRA), version: 1.0.4}, capabilities: [tools, resources, prompts, completions, logging]}
+    tools_list: {http_status: 200, tool_count: 5, file: mcp/horizonshield-dev-webmcp-tools.json}
+    tools: [route_request, run_full_audit, intake_estimate, scan_tactics, draft_broadcast]
+    get_request: {http_status: 405, body: 'Method Not Allowed. Use POST for JSON-RPC.'}
+- id: yakumo
+  name: HORIZON SHIELD YAKUMO (verified-contractor directory)
+  endpoint: https://hearing.horizonshield.dev/mcp
+  transport: streamable-http
+  http_methods: [POST]
+  auth: none
+  status: live
+  authorship: provider
+  probe:
+    fetched: '2026-09-19'
+    initialize: {http_status: 200, protocol_version: '2025-06-18', server_info: {name: HORIZON SHIELD YAKUMO, version: 2.3.1}, capabilities: [tools, resources, prompts, completions]}
+    tools_list: {http_status: 200, tool_count: 6, file: mcp/horizonshield-dev-yakumo-mcp-tools.json}
+    tools: [list_verified_stores, get_contractor_profile, find_contractor, mall_overview, how_verification_works, check_named_contractor]
+    note: All six tools readOnlyHint + idempotentHint true; the server returns scores and tiers, never prices.
+- id: femtech
+  name: HORIZON SHIELD Femtech Registry (hs-femtech-mcp)
+  endpoint: https://femtech.horizonshield.dev/mcp
+  transport: streamable-http
+  http_methods: [POST]
+  auth: none
+  status: live
+  authorship: provider
+  source_repo: https://github.com/ogasurfproject-jpg/hs-femtech-mcp
+  probe:
+    fetched: '2026-09-19'
+    initialize: {http_status: 200, protocol_version: '2024-11-05', server_info: {name: hs-femtech-mcp, version: 0.4.1}, capabilities: [tools]}
+    tools_list: {http_status: 200, tool_count: 9, file: mcp/horizonshield-dev-femtech-mcp-tools.json}
+    tools: [register_source, list_registry, get_registry_entry, verify_source, get_femtech_topic, explain_product_category, how_to_verify, get_agent_card, check_source]
+    get_request: {http_status: 200, note: 'GET /mcp returns a JSON descriptor (server, version, endpoints) rather than 405 — the one server in the family that does not follow the Streamable HTTP GET rule.'}
+    note: register_source is the one write tool (readOnlyHint false) — it appends a registry entry after machine checks.
+hosted_for_partners:
+  note: >-
+    The gate's watchlist and the register also name https://p001.horizonshield.dev/mcp and https://p002.horizonshield.dev/mcp
+    (probed: live, one tool each, get_partner_profile). Their agent cards name the Yakumo member contractors as
+    provider.organization, so they are contractor agents that HORIZON SHIELD builds and hosts under its "WebMCP
+    Partner" plan, not this company's own surface. Recorded for completeness; not counted above.
+well_known_on_mcp_host:
+  served:
+  - {path: /.well-known/agent-card.json, status: 200, file: a2a/horizonshield-dev-agent-card.json}
+  - {path: /.well-known/verification-contract.json, status: 200, file: well-known/horizonshield-dev-verification-contract.json}
+  - {path: /.well-known/jwks.json, status: 200, file: well-known/horizonshield-dev-jwks.json}
+  - {path: /.well-known/glama.json, status: 200, file: well-known/horizonshield-dev-glama.json}
+  - {path: /.well-known/usage-stats.json, status: 200, file: well-known/horizonshield-dev-usage-stats.json}
+  absent: [/.well-known/oauth-protected-resource, /.well-known/oauth-authorization-server, /.well-known/openid-configuration, /.well-known/security.txt, /.well-known/api-catalog, /.well-known/ai-plugin.json, /.well-known/apis.json, /openapi.json, /llms.txt]
+  note: See well-known/horizonshield-dev-well-known.yml for the full hosts[] -> documents[] index.
+clients_documented:
+- {client: Claude Code / Cowork plugin, install: '/plugin marketplace add ogasurfproject-jpg/horizon-shield; /plugin install horizon-shield@the-horizons', source: 'https://github.com/ogasurfproject-jpg/horizon-shield/blob/main/plugin/README.md'}
+- {client: Gemini CLI extension, manifest: 'https://shield.the-horizons-innovation.com/gemini-extension.json'}
+- {client: custom GPT (ChatGPT), url: 'https://chatgpt.com/g/g-69e180f9a5048191886069dd58b22572-jian-she-fei-tietuka-by-horizon-shield', note: Linked from the site home page.}
+- {client: Gemini Gem, url: 'https://gemini.google.com/gem/1_AqLRwNSP1tZWZNWzyNIrsOrBLI1fAjo', note: Linked from the site home page.}

@@ -1,0 +1,375 @@
+{
+  "openapi": "3.1.0",
+  "info": {
+    "title": "MCP conduct register",
+    "version": "0.4.7",
+    "description": "A register of measured conduct for MCP endpoints. Five stated conditions are measured on a schedule. A condition that could not be measured is never counted as a pass, including for the operator of this gate. Read only. No account, no key, no fee. Every verdict carries a SHA-256 that a stranger can recompute.",
+    "license": {
+      "name": "MIT",
+      "url": "https://opensource.org/licenses/MIT"
+    },
+    "contact": {
+      "url": "https://shield.the-horizons-innovation.com/verify-directory/"
+    }
+  },
+  "servers": [
+    {
+      "url": "https://gate.horizonshield.dev"
+    }
+  ],
+  "paths": {
+    "/register": {
+      "get": {
+        "summary": "Every row in the register",
+        "description": "Rows are scheduled measurements, not endorsements. An endpoint that is absent has simply never been measured.",
+        "responses": {
+          "200": {
+            "description": "OK"
+          }
+        }
+      }
+    },
+    "/verified.json": {
+      "get": {
+        "summary": "Only the rows that passed every measured condition",
+        "description": "A schema.org Dataset. Returns zero rows when zero rows pass. The bar is not lowered to avoid an empty list.",
+        "responses": {
+          "200": {
+            "description": "OK"
+          }
+        }
+      }
+    },
+    "/history": {
+      "get": {
+        "summary": "Past measurements for one endpoint",
+        "description": "Query with ?endpoint=. Records are appended, never edited. The gate keeps the most recent 400 per endpoint (30 until 2026-09-05); older records leave this response, so archive the export.",
+        "responses": {
+          "200": {
+            "description": "OK"
+          }
+        }
+      }
+    },
+    "/changes": {
+      "get": {
+        "summary": "State changes only",
+        "description": "A change means a condition flipped, not merely that a new verdict was issued.",
+        "responses": {
+          "200": {
+            "description": "OK"
+          }
+        }
+      }
+    },
+    "/feed.xml": {
+      "get": {
+        "summary": "The same changes as an Atom feed",
+        "description": "For subscribing rather than polling.",
+        "responses": {
+          "200": {
+            "description": "OK"
+          }
+        }
+      }
+    },
+    "/sitemap.xml": {
+      "get": {
+        "summary": "One URL per measured endpoint",
+        "description": "Only endpoints that have actually been measured appear. No page is minted for an endpoint nobody has measured.",
+        "responses": {
+          "200": {
+            "description": "OK"
+          }
+        }
+      }
+    },
+    "/e/{host}{path}": {
+      "get": {
+        "summary": "The permanent page for one measured endpoint",
+        "description": "Carries the verdict, the time it was taken, the SHA-256 of the record, and the command to recompute it. 404 when the endpoint has never been measured.",
+        "responses": {
+          "200": {
+            "description": "OK"
+          }
+        }
+      }
+    },
+    "/badge": {
+      "get": {
+        "summary": "A badge drawn from the register at request time",
+        "description": "Query with ?endpoint=. Short cache, so a green cannot be kept up after the row stops being green.",
+        "responses": {
+          "200": {
+            "description": "OK"
+          }
+        }
+      }
+    },
+    "/embed": {
+      "get": {
+        "summary": "The verification envelope, ready to paste on your own site",
+        "description": "Query with ?endpoint=. The text twin of the badge: JSON-LD for crawlers and the same statement as visible text for language models that fetch the page. Carries status, the record sha256, the recompute recipe and what it does not establish; never a score. Add format=json for the JSON-LD alone. A copy is a snapshot with its date inside; the /e/ page is the live statement.",
+        "responses": {
+          "200": {
+            "description": "OK"
+          }
+        }
+      }
+    },
+    "/badge/seal": {
+      "get": {
+        "summary": "A larger badge, sized for print and for other people's sites",
+        "description": "Query with ?endpoint=. Carries the operator label, the endpoint, the measurement date and the verify URL. Add download=1 to receive it as a file. A downloaded file is a snapshot: the date is drawn into the image for exactly that reason, and the live row remains the only current statement.",
+        "responses": {
+          "200": {
+            "description": "OK"
+          }
+        }
+      }
+    },
+    "/spec": {
+      "get": {
+        "summary": "The five conditions, stated in full",
+        "description": "Includes what a pass does not mean.",
+        "responses": {
+          "200": {
+            "description": "OK"
+          }
+        }
+      }
+    },
+    "/ext/conduct/v1": {
+      "get": {
+        "summary": "A2A Conduct Extension v1 (the URI is the identifier)",
+        "description": "JSON by default. Accept: text/markdown returns the specification text. Declared by agent cards under capabilities.extensions[].",
+        "responses": {
+          "200": {
+            "description": "OK"
+          }
+        }
+      }
+    },
+    "/self": {
+      "get": {
+        "summary": "This gate measured against its own conditions",
+        "description": "It does not currently pass all of them, and the reason is published.",
+        "responses": {
+          "200": {
+            "description": "OK"
+          }
+        }
+      }
+    },
+    "/health": {
+      "get": {
+        "summary": "Liveness and the deployed commit",
+        "description": "",
+        "responses": {
+          "200": {
+            "description": "OK"
+          }
+        }
+      }
+    },
+    "/recompute": {
+      "post": {
+        "summary": "Work out which canonicalization reproduces a claimed hash",
+        "description": "Send a JSON object as it was published, and a SHA-256 somebody claims was taken over it. Returns every recipe that reproduces the value, whether that recipe is RFC 8785 JCS, how many combinations were tried, and the exact space they covered. A hash that could not be reproduced is reported as not reproduced with the number of combinations tried, and never as invalid. Omit the claimed hash to receive canonical forms and their hashes instead, so a reading can be held by someone who does not operate the source. Contacts nothing. Stores nothing.",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "required": [
+                  "object"
+                ],
+                "properties": {
+                  "object": {
+                    "type": "object",
+                    "description": "The JSON object as published."
+                  },
+                  "claimed": {
+                    "type": "string",
+                    "description": "Optional. 64 hex characters. Omit to receive canonical forms."
+                  },
+                  "max_candidates": {
+                    "type": "integer",
+                    "description": "Optional upper bound on combinations tried."
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "OK"
+          }
+        }
+      }
+    },
+    "/verify-event": {
+      "post": {
+        "summary": "Recompute a NIP-01 event id and verify its BIP340 signature",
+        "description": "Computed here from the curve parameters, with no library and no network call, so neither the issuer's own verification service nor a dependency has to be trusted. For each field name given, the answer states whether it sits inside the signed bytes or beside them. A valid signature shows that the holder of the key signed those bytes. It does not make the bytes true.",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "required": [
+                  "event"
+                ],
+                "properties": {
+                  "event": {
+                    "type": "object",
+                    "description": "A complete signed event with id, pubkey, created_at, kind, tags, content and sig."
+                  },
+                  "assert_inside": {
+                    "type": "array",
+                    "items": {
+                      "type": "string"
+                    },
+                    "description": "Optional field names to locate inside the signed bytes. Both content and tags are searched, and the answer says which one carried the field."
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "OK"
+          }
+        }
+      }
+    },
+    "/mould": {
+      "get": {
+        "summary": "Mould records. What class of assumption a fix came from, where the author searched for it, and what they found. A record with an empty search is published as such.",
+        "description": "",
+        "responses": {
+          "200": {
+            "description": "OK"
+          }
+        }
+      }
+    },
+    "/sweep/last": {
+      "get": {
+        "summary": "When the last scheduled re-measurement ran, under which coordinate rule, and why",
+        "description": "",
+        "responses": {
+          "200": {
+            "description": "OK"
+          }
+        }
+      }
+    },
+    "/nenrin/window": {
+      "get": {
+        "summary": "The instant coordinate's public window: salt commitment at creation, pinned rule, beacon, salt revealed after the window closes (0.3.5), and since 0.4.0 whether the commitment was filed to the ledger witness intake before the window opened",
+        "description": "",
+        "responses": {
+          "200": {
+            "description": "OK"
+          }
+        }
+      }
+    },
+    "/register/lookup": {
+      "get": {
+        "summary": "One read before connecting (conduct-v1.1 section 7): status verified / pending / declined / unknown, the last published ring's counts, where the record lives, and what the answer does not establish. Query endpoint=<https MCP endpoint>. Cached 24 hours. No score.",
+        "description": "",
+        "responses": {
+          "200": {
+            "description": "OK"
+          }
+        }
+      }
+    },
+    "/watchlist": {
+      "get": {
+        "summary": "Endpoints scheduled for re-measurement",
+        "description": "",
+        "responses": {
+          "200": {
+            "description": "OK"
+          }
+        }
+      }
+    },
+    "/.well-known/agent-card.json": {
+      "get": {
+        "summary": "A2A agent card for this gate",
+        "description": "",
+        "responses": {
+          "200": {
+            "description": "OK"
+          }
+        }
+      }
+    },
+    "/.well-known/mcp-register.json": {
+      "get": {
+        "summary": "Machine readable summary of the register",
+        "description": "",
+        "responses": {
+          "200": {
+            "description": "OK"
+          }
+        }
+      }
+    },
+    "/check": {
+      "post": {
+        "summary": "Measure one endpoint now",
+        "x-known-limitation": "Known limitation of this instrument, measured 2026-08-18 and unresolved: requests carrying the Python urllib user agent are refused with 403 by a Cloudflare managed rule in front of this Worker, so that one client is turned away before any code here runs. curl, python-requests, node-fetch, undici, axios, okhttp, Go, Java, Postman and an absent user agent were all measured at 200 on the same day. This is stated here rather than worked around silently.",
+        "description": "Measures the stated conditions against the endpoint you name. Determinism stays unmeasured unless the owner has recorded consent, because measuring it requires calling a tool on someone else's server.",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "required": [
+                  "endpoint"
+                ],
+                "properties": {
+                  "endpoint": {
+                    "type": "string",
+                    "format": "uri",
+                    "description": "The MCP endpoint to measure."
+                  },
+                  "allow_tool_call": {
+                    "type": "boolean",
+                    "description": "Only the owner of the endpoint may set this true."
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "OK"
+          }
+        }
+      }
+    },
+    "/mcp": {
+      "post": {
+        "summary": "The same register over MCP",
+        "description": "Streamable HTTP, JSON-RPC 2.0.",
+        "responses": {
+          "200": {
+            "description": "OK"
+          }
+        }
+      }
+    }
+  }
+}

@@ -1,0 +1,53 @@
+generated: '2026-09-19'
+method: searched
+source: https://mcp.horizonshield.dev/
+derived_from: openapi/horizonshield-dev-mcp-conduct-register-openapi.json
+docs:
+- https://github.com/ogasurfproject-jpg/horizon-shield/blob/main/plugin/README.md
+- https://gate.horizonshield.dev/openapi.json
+- https://ledger.horizonshield.dev/llms.txt
+summary: >-
+  Every public surface is anonymous by design and says so: the plugin README ("Read-only, no API key"), the gate
+  OpenAPI description ("Read only. No account, no key, no fee."), the ledger security.txt ("read-only and
+  unauthenticated by design"), the JIDEC card (securitySchemes {}, security []). Verified live: initialize,
+  tools/list, prompts/list, tools/call get_agent_card and A2A message/send all succeeded with no credential on
+  mcp.horizonshield.dev; tools/list succeeded on gate., jidec., web., hearing. and femtech.; every REST route probed
+  on gate. and ledger. answered without a key. No OAuth/OIDC discovery document exists on any host. The only keys in
+  the system are the PROVIDER's signing keys (JWKS, ES256) used to sign agent cards and receipts, and the
+  caller-side SHA-256 recomputation that replaces trust in the issuer.
+schemes: []
+scheme_count: 0
+anonymous_access:
+  mcp:
+  - {endpoint: 'https://mcp.horizonshield.dev/', auth: none, verified: 'initialize 200, tools/list 200 (15), prompts/list 200 (5), tools/call get_agent_card 200'}
+  - {endpoint: 'https://gate.horizonshield.dev/mcp', auth: none, verified: 'tools/list 200 (5)'}
+  - {endpoint: 'https://jidec.horizonshield.dev/mcp', auth: none, verified: 'tools/list 200 (4)'}
+  - {endpoint: 'https://web.horizonshield.dev/mcp', auth: none, verified: 'initialize 200, tools/list 200 (5)'}
+  - {endpoint: 'https://hearing.horizonshield.dev/mcp', auth: none, verified: 'initialize 200, tools/list 200 (6)'}
+  - {endpoint: 'https://femtech.horizonshield.dev/mcp', auth: none, verified: 'initialize 200, tools/list 200 (9)'}
+  a2a:
+  - {endpoint: 'https://mcp.horizonshield.dev/', auth: none, verified: message/send 200 -> completed Task}
+  rest:
+  - {base: 'https://gate.horizonshield.dev', auth: none, verified: '/spec, /register, /changes, /self, /health, /sweep/last, /watchlist, /nenrin/window, /ext/conduct/v1, /history all 200'}
+  - {base: 'https://ledger.horizonshield.dev', auth: none, verified: '/, /ledger, /witness, /paths, /agreement, /health, /cite/jidec:entry:5 all 200'}
+openapi_security:
+  securitySchemes: null
+  security: null
+  note: The gate contract declares no security at all, which here is accurate rather than an omission; an explicit empty security [] would make the anonymity machine-readable.
+write_surfaces_and_gating:
+  - {surface: 'POST https://gate.horizonshield.dev/check', gate: none, note: 'Anyone can request a measurement of any public MCP endpoint; by default no tool is called on the target. allow_tool_call: true is "only for a server you control" — an honour-system instruction, not an enforced credential.'}
+  - {surface: 'POST https://ledger.horizonshield.dev/witness', gate: none, note: 'Anyone may submit a witness walk under their own name; acceptance is mechanical schema checking; bundled daily.'}
+  - {surface: 'MCP tool create_ap2_fairness_attestation', gate: none, note: Appends a ledger record without any credential.}
+  - {surface: 'MCP tool register_source (femtech)', gate: none, note: 'Appends a registry entry after machine checks of five conditions.'}
+  - {surface: 'admin routes', gate: 'not public', note: 'The ledger''s privacy block names POST /ledger/append, POST /reference/pin and GET /ledger/pending as admin routes that are "not measured at all"; they were not probed.'}
+provider_signing_keys:
+  jwks: well-known/horizonshield-dev-jwks.json
+  key: {kty: EC, crv: P-256, kid: hs-2026-09, alg: ES256, use: sig}
+  hosts_serving_it: [mcp.horizonshield.dev, gate.horizonshield.dev, ledger.horizonshield.dev, femtech.horizonshield.dev]
+  used_for:
+  - agent card signatures[] (JWS; jku -> that host's jwks.json)
+  - gate verdict records (record_sha256 recomputation)
+  - ledger claims
+  note: These authenticate the PROVIDER to the caller, not the caller to the provider.
+consumer_web_products:
+  note: 'The human-facing products (EHN board, kantei appraisal) use LINE login and PayPal checkout on the docs site; the privacy policy says card data is held by PayPal. Out of scope for the API surface.'

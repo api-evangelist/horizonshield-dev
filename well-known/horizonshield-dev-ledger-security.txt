@@ -1,0 +1,11 @@
+# HORIZON SHIELD / JIDEC: RFC 9116
+Contact: mailto:thehorizon.nnovation@icloud.com
+Expires: 2027-07-26T00:00:00.000Z
+Preferred-Languages: ja, en
+Canonical: https://ledger.horizonshield.dev/.well-known/security.txt
+Policy: https://ledger.horizonshield.dev/llms.txt
+
+# This ledger is read-only and unauthenticated by design. If you find a way
+# to make a record's bytes disagree with its published hash, or to make a
+# verification recipe return a result that cannot be reproduced, that is the
+# vulnerability we most want to hear about.

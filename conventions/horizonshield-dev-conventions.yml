@@ -1,0 +1,115 @@
+generated: '2026-09-19'
+method: searched
+source: https://mcp.horizonshield.dev/
+derived_from: openapi/horizonshield-dev-mcp-conduct-register-openapi.json
+docs:
+- https://mcp.horizonshield.dev/.well-known/verification-contract.json
+- https://ledger.horizonshield.dev/llms.txt
+- https://gate.horizonshield.dev/spec
+- https://shield.the-horizons-innovation.com/tos
+base_urls:
+  kira_mcp_a2a: https://mcp.horizonshield.dev/
+  gate_rest: https://gate.horizonshield.dev
+  ledger_rest: https://ledger.horizonshield.dev
+media_type: application/json (JSON-RPC 2.0 over POST for MCP and A2A; plain JSON over GET for the gate and ledger; application/linkset+json for the api-catalog; text/markdown for the ledger llms.txt)
+auth:
+  style: none on every public surface — no API key, no OAuth, no account (see authentication/)
+  detail: authentication/horizonshield-dev-authentication.yml
+idempotency:
+  supported: false
+  coverage: none
+  mechanism: null
+  header: null
+  scope: []
+  retention: undocumented
+  description: >-
+    No Idempotency-Key header, parameter or field exists on any write surface and none is documented. What exists
+    instead is per-tool ANNOTATION: the KIRA, gate, JIDEC, WebMCP and Yakumo servers mark every tool with
+    readOnlyHint / destructiveHint / idempotentHint, and the two ledger-appending tools declare themselves
+    non-read-only and non-idempotent (create_ap2_fairness_attestation: readOnlyHint false, idempotentHint false;
+    gate check_conformance: idempotentHint false because it triggers a live measurement). Determinism is a separate,
+    measured property: the gate's fourth condition is "identical input returns identical output", and the KIRA
+    site's stated design goal is "same input, same output, every time" — a read that repeats safely, which is not the
+    same as a write that de-duplicates. Ledger records are content-addressed (claim_sha256 / record_sha256), so an
+    identical witness or attestation payload hashes to the same id, but nothing documents whether a repeat is
+    rejected or appended twice.
+  gaps:
+  - No idempotency key on POST /witness, POST /check, or the two appending MCP tools.
+  - No documented retry guidance for an ambiguous outcome.
+dry_run_mode:
+  supported: false
+  status: none
+  note: >-
+    No documented dry-run or sandbox twin for a write. The nearest things are read-only by construction and are not
+    rehearsals of a write: preview_reverse_estimate ("direction of a rough estimate"), POST /check without
+    allow_tool_call (a real measurement that simply skips the tool-call condition), and the conduct-witness skill's
+    advice to run the walk WITHOUT --submit first and show the assertions before filing — a client-side preview of a
+    ledger submission, documented in the skill, not a server mode.
+reversibility:
+  grade: none
+  docs: https://ledger.horizonshield.dev/llms.txt
+  note: >-
+    The API's write surfaces all append to public, content-addressed, Bitcoin-anchored records and are irreversible
+    BY DESIGN — the provider says so repeatedly and treats it as the product ("records of conduct that the vendor did
+    not author and cannot delete"; the Yakumo plans page: "消す機能を作っていません" — we built no delete function; the
+    biz page lists "deletion of bad cases" among things that are not for sale). No cancel/void/undo operation exists
+    and no window is stated, so the grade is none rather than na: there IS a write surface, and it cannot be taken
+    back. The commercial Terms of Service carry real reversal windows, but they govern the human consulting products
+    (report delivery, site inspection), not the API, and are recorded below as context only.
+  write_surfaces:
+  - operation: MCP tool create_ap2_fairness_attestation (mcp.horizonshield.dev)
+    action: Append a FairPriceAttestation record to the public ledger
+    reversal_operation: null
+    window: null
+    stated: Each call appends one record to the public ledger, so it is not read-only.
+  - operation: POST https://ledger.horizonshield.dev/witness
+    action: File a witness walk of any public agent; bundled into a daily Bitcoin-anchored ledger entry
+    reversal_operation: null
+    window: null
+    stated: 'The conduct-witness skill: "You are about to add one line to a record that the agent being walked did not write and cannot delete."; the intake bundles the pool once a day at 00:30 UTC.'
+  - operation: POST https://gate.horizonshield.dev/check
+    action: Trigger a measurement of an MCP endpoint; the verdict enters /history
+    reversal_operation: null
+    window: null
+    stated: 'Register rows are "scheduled measurements, not endorsements"; the register exposes a removed_rows list and the watchlist an owner_declined flag, and the conduct-witness skill says an operator may decline measurement by serving listing: "decline" in /.well-known/mcp-conduct.json — an opt-out of FUTURE measurement, not a reversal of a recorded verdict.'
+  - operation: MCP tool register_source (femtech.horizonshield.dev)
+    action: Append a femtech information-source registry entry
+    reversal_operation: null
+    window: null
+  commercial_terms_context:
+    url: https://shield.the-horizons-innovation.com/tos
+    verbatim:
+    - 'レポート納品前のキャンセル： 全額返金（連絡後7営業日以内に処理）'
+    - 'レポート納品後のキャンセル： 役務の性質上、返金不可'
+    - '完成検査立会い（前日17時までのキャンセル）： 全額返金 ／ （当日キャンセル）： 交通費実費を申し受けます'
+    - '前払式チケット（1枚100円）… 有効期限：なし … 役務提供前のキャンセルに限り … 未使用分を返金します。'
+    note: Human services only; not an API reversal path.
+pagination:
+  style: none documented
+  note: 'GET /ledger returns count + entries[] (49 at fetch time) and the ledger llms.txt states "The public ledger index covers the most recent 100 entries"; GET /register carries count and max 500. No cursor or page parameters are declared.'
+field_expansion: none
+metadata: none
+request_tracing:
+  header: null
+  note: 'MCP responses expose mcp-session-id via Access-Control-Expose-Headers on the KIRA host; no request-id header was observed. Provenance travels in the body instead: every price answer carries provenance {dataset version, curator, sources}, and every receipt carries claim_sha256.'
+versioning:
+  style: serverInfo.version / info.version / card version; unversioned paths
+  detail: lifecycle/horizonshield-dev-lifecycle.yml
+error_envelope:
+  shape: '{"error": <snake_case_code>, "path"?, "message"|"detail", "endpoint"?, "known_paths"|"routes"?}'
+  jsonrpc: '{"jsonrpc":"2.0","id":…,"error":{"code":-32601,"message":"…"}}'
+  detail: errors/horizonshield-dev-problem-types.yml
+rate_limit_signaling:
+  headers: []
+  status: undocumented
+  detail: rate-limits/horizonshield-dev-rate-limits.yml
+agent_guidance:
+  next_calls: 'Every KIRA price answer carries next_calls — the next tool on the same server with its arguments already filled — and next_actions (EHN review, itemized diagnosis, Yakumo).'
+  honesty_rules: 'Japan only; matching by Japanese work name; ambiguous -> "ambiguous" not a verdict; zero -> zero; no referral or listing fee from contractors (initialize instructions).'
+  localisation: English work names and romaji place names are mapped to Japanese and the mapping is disclosed as normalized_from.
+cross_links:
+  authentication: authentication/horizonshield-dev-authentication.yml
+  errors: errors/horizonshield-dev-problem-types.yml
+  lifecycle: lifecycle/horizonshield-dev-lifecycle.yml
+  rate_limits: rate-limits/horizonshield-dev-rate-limits.yml
+  conformance: conformance/horizonshield-dev-conformance.yml

@@ -1,0 +1,125 @@
+{
+  "supportedInterfaces": [
+    {
+      "url": "https://femtech.horizonshield.dev/a2a",
+      "protocolBinding": "JSONRPC",
+      "protocolVersion": "1.0"
+    },
+    {
+      "url": "https://femtech.horizonshield.dev/a2a",
+      "protocolBinding": "JSONRPC",
+      "protocolVersion": "0.3"
+    }
+  ],
+  "protocolVersion": "0.3.0",
+  "url": "https://femtech.horizonshield.dev/a2a",
+  "preferredTransport": "JSONRPC",
+  "capabilities": {
+    "streaming": false,
+    "pushNotifications": false,
+    "extensions": [
+      {
+        "uri": "https://gate.horizonshield.dev/ext/conduct/v1",
+        "description": "Who pays this agent, where its measured conduct record lives, and where to file a witness walk. The specification is served at the URI.",
+        "required": false,
+        "params": {
+          "compensation": {
+            "paid_by": "public",
+            "referral_fee": false,
+            "listing_fee": false,
+            "success_fee_pct": 0,
+            "disclosure_url": "https://shield.the-horizons-innovation.com/"
+          },
+          "measured_endpoints": [
+            "https://femtech.horizonshield.dev/mcp"
+          ],
+          "conduct_record": "https://gate.horizonshield.dev/history?endpoint=https%3A%2F%2Ffemtech.horizonshield.dev%2Fmcp",
+          "verdict_recipe": "https://gate.horizonshield.dev/spec",
+          "witness_intake": "https://ledger.horizonshield.dev/witness",
+          "register": "https://gate.horizonshield.dev/register",
+          "rings": {
+            "spec": "https://github.com/ogasurfproject-jpg/horizon-shield/blob/main/workers/hs-ledger/nenrin/NENRIN_SPEC_v1.md",
+            "spec_sha256": "9ccba2e325fd2a555fcdb2dec519b8c6bf7a669064674846aea98ecfff824e3d",
+            "base": "https://raw.githubusercontent.com/ogasurfproject-jpg/mcp-conduct-register/main/rings/",
+            "path": "<slug>/<YYYY-MM>.json",
+            "slug": "endpoint URL without https://, lower case, every run of characters outside [a-z0-9] replaced by one hyphen, hyphens trimmed at both ends",
+            "ledger": "https://ledger.horizonshield.dev/ledger"
+          }
+        }
+      }
+    ]
+  },
+  "name": "HORIZON SHIELD Femtech Registry",
+  "description": "Neutral verification registry for femtech (women's health) information sources. Indexes sources by provenance, authority tier, jurisdiction and machine-readable compensation disclosure with re-computable SHA-256. No diagnosis, no efficacy claims, no product endorsement, no referral fees.",
+  "version": "0.4.1",
+  "provider": {
+    "organization": "The HORIZ音s株式会社",
+    "url": "https://shield.the-horizons-innovation.com/"
+  },
+  "documentationUrl": "https://femtech.horizonshield.dev/llms.txt",
+  "defaultInputModes": [
+    "text/plain",
+    "application/json"
+  ],
+  "defaultOutputModes": [
+    "application/json",
+    "text/plain"
+  ],
+  "protocol": "A2A (Agent2Agent)",
+  "role": "neutral verification registry for femtech information sources (not a medical authority)",
+  "skills": [
+    {
+      "id": "femtech-information-registry",
+      "name": "Femtech information source registry",
+      "description": "Verifies and indexes femtech (women's health) information sources by provenance, authority tier, jurisdiction and compensation disclosure. Send a URL or a publisher name as a text part and get back who publishes it, in what capacity, and whether a conflict of interest is disclosed. Never rules on whether a claim is true.",
+      "tags": [
+        "femtech",
+        "women's-health",
+        "provenance",
+        "registry",
+        "neutral"
+      ],
+      "examples": [
+        "Is https://example.org/pms-guide a verified source?",
+        "この URL の発信元は検証済みか"
+      ],
+      "note": "世界のフェム情報源を出典・権威・管轄・報酬開示で検証し束ねる / verify and index femtech information sources"
+    },
+    {
+      "id": "verify-source",
+      "name": "Third-party verification of a registry entry",
+      "description": "Recomputes the canonical bytes and SHA-256 of a registry entry and compares them with the stored provenance. Fail closed. Untampered is not the same as medically true.",
+      "tags": [
+        "verification",
+        "sha256",
+        "fail-closed",
+        "tamper-evident"
+      ],
+      "note": "登録エントリの第三者検証(改ざんなし=untampered。医学的真偽の判定ではない) / third-party verification of an entry, fail closed"
+    }
+  ],
+  "compensation": {
+    "paid_by": "public",
+    "referral_fee": false,
+    "listing_fee": false,
+    "success_fee_pct": 0,
+    "disclosure_url": "https://shield.the-horizons-innovation.com/"
+  },
+  "mcp_endpoint": "POST / (JSON-RPC 2.0)",
+  "discovery": {
+    "llms_txt": "/llms.txt",
+    "agent_card": "/.well-known/agent-card.json",
+    "registry_index": "/registry",
+    "source_checker": "/checker",
+    "source_check_api": "/check-source",
+    "verified_badge": "/badge",
+    "beginner_guide": "/start"
+  },
+  "medical_disclaimer": "本サービスは一般的な情報源の検証と提示のみを行い、診断・治療・特定商品の推奨は行いません。症状や治療の判断は医療機関にご相談ください。 / Information and source-verification only. Not medical advice.",
+  "signatures": [
+    {
+      "protected": "eyJhbGciOiJFUzI1NiIsInR5cCI6IkpPU0UiLCJraWQiOiJocy0yMDI2LTA5Iiwiamt1IjoiaHR0cHM6Ly9mZW10ZWNoLmhvcml6b25zaGllbGQuZGV2Ly53ZWxsLWtub3duL2p3a3MuanNvbiJ9",
+      "signature": "06TIwoqqUswedWgLhnPkFXxG38XwpwoFaMDIdrJ0TJN0cewXgxQ7QZrWqUGCbrjr01qHuuMIU06r8JecSUkn1g"
+    }
+  ]
+}

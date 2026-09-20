@@ -1,0 +1,225 @@
+{
+  "jsonrpc": "2.0",
+  "id": 1,
+  "result": {
+    "tools": [
+      {
+        "name": "register_source",
+        "description": "フェム情報源を申請し、登録の5条件(実在する出典/権威の格/管轄/報酬開示/決定論)を機械検証。KVと公開書き込みが有効なら verified を保存。内容の医学的真偽は審査しない。",
+        "inputSchema": {
+          "type": "object",
+          "required": [
+            "evidence_url",
+            "authority_tier",
+            "jurisdiction",
+            "compensation"
+          ],
+          "properties": {
+            "entry_id": {
+              "type": "string"
+            },
+            "kind": {
+              "type": "string",
+              "enum": [
+                "source",
+                "provider"
+              ]
+            },
+            "publisher": {
+              "type": "string"
+            },
+            "authority_tier": {
+              "type": "string",
+              "enum": [
+                "A_public_or_academic",
+                "B_medical_institution",
+                "C_commercial_media"
+              ]
+            },
+            "jurisdiction": {
+              "type": "string"
+            },
+            "lang": {
+              "type": "string"
+            },
+            "topic": {
+              "type": "string"
+            },
+            "evidence_url": {
+              "type": "string"
+            },
+            "compensation": {
+              "type": "object"
+            },
+            "check_reachability": {
+              "type": "boolean"
+            }
+          }
+        },
+        "annotations": {
+          "title": "register_source",
+          "readOnlyHint": false,
+          "destructiveHint": false
+        }
+      },
+      {
+        "name": "list_registry",
+        "description": "管轄・言語・トピック・権威の格・状態でレジストリを絞って一覧。seed と保存済みをマージ。",
+        "inputSchema": {
+          "type": "object",
+          "properties": {
+            "jurisdiction": {
+              "type": "string"
+            },
+            "lang": {
+              "type": "string"
+            },
+            "topic": {
+              "type": "string"
+            },
+            "authority_tier": {
+              "type": "string"
+            },
+            "status": {
+              "type": "string"
+            }
+          }
+        },
+        "annotations": {
+          "title": "list_registry",
+          "readOnlyHint": true,
+          "destructiveHint": false
+        }
+      },
+      {
+        "name": "get_registry_entry",
+        "description": "entry_id で情報源の出典・権威・管轄・報酬開示・検証状態・provenanceを返す。",
+        "inputSchema": {
+          "type": "object",
+          "required": [
+            "entry_id"
+          ],
+          "properties": {
+            "entry_id": {
+              "type": "string"
+            }
+          }
+        },
+        "annotations": {
+          "title": "get_registry_entry",
+          "readOnlyHint": true,
+          "destructiveHint": false
+        }
+      },
+      {
+        "name": "verify_source",
+        "description": "エントリの第三者検証。canonical と SHA-256、保存済み provenance との一致を返す。fail-closed。医学的真偽の判定ではない。",
+        "inputSchema": {
+          "type": "object",
+          "required": [
+            "entry_id"
+          ],
+          "properties": {
+            "entry_id": {
+              "type": "string"
+            }
+          }
+        },
+        "annotations": {
+          "title": "verify_source",
+          "readOnlyHint": true,
+          "destructiveHint": false
+        }
+      },
+      {
+        "name": "get_femtech_topic",
+        "description": "出典に紐づく中立の要約情報を、sources と管轄と免責つきで返す。診断・断定はしない。論点=月経/PMS/更年期。",
+        "inputSchema": {
+          "type": "object",
+          "required": [
+            "topic_id"
+          ],
+          "properties": {
+            "topic_id": {
+              "type": "string"
+            }
+          }
+        },
+        "annotations": {
+          "title": "get_femtech_topic",
+          "readOnlyHint": true,
+          "destructiveHint": false
+        }
+      },
+      {
+        "name": "explain_product_category",
+        "description": "フェムテック製品の種類の中立解説。銘柄比較・効能断定はしない。",
+        "inputSchema": {
+          "type": "object",
+          "required": [
+            "category_id"
+          ],
+          "properties": {
+            "category_id": {
+              "type": "string"
+            }
+          }
+        },
+        "annotations": {
+          "title": "explain_product_category",
+          "readOnlyHint": true,
+          "destructiveHint": false
+        }
+      },
+      {
+        "name": "how_to_verify",
+        "description": "エントリのハッシュを第三者が再計算する手順。",
+        "inputSchema": {
+          "type": "object",
+          "properties": {}
+        },
+        "annotations": {
+          "title": "how_to_verify",
+          "readOnlyHint": true,
+          "destructiveHint": false
+        }
+      },
+      {
+        "name": "get_agent_card",
+        "description": "A2Aエージェントカード。compensation(送客料ゼロ)を機械可読で開示し、自らが中立の検証層であることを宣言。",
+        "inputSchema": {
+          "type": "object",
+          "properties": {}
+        },
+        "annotations": {
+          "title": "get_agent_card",
+          "readOnlyHint": true,
+          "destructiveHint": false
+        }
+      },
+      {
+        "name": "check_source",
+        "description": "気になる健康情報のURLまたは発信元の名前を渡すと、その出どころが当レジストリで検証済みか（誰が・権威の格・管轄・利益相反の開示）を返す。未収録なら「信用できない」ではなく「未検証」として、自分で確かめる観点と検証済みの一次情報源を案内する。内容の医学的真偽・製品の良し悪しは一切判定しない。症状入力は受け取らない。",
+        "inputSchema": {
+          "type": "object",
+          "properties": {
+            "url": {
+              "type": "string"
+            },
+            "publisher": {
+              "type": "string"
+            },
+            "topic": {
+              "type": "string"
+            }
+          }
+        },
+        "annotations": {
+          "title": "check_source",
+          "readOnlyHint": true,
+          "destructiveHint": false
+        }
+      }
+    ]
+  }
+}
