@@ -1,0 +1,37 @@
+openapi: 3.2.0
+info:
+  title: MCP conduct Register API
+  version: 0.4.7
+  description: A register of measured conduct for MCP endpoints. Five stated conditions are measured on a schedule. A condition that could not be measured is never counted as a pass, including for the operator of this gate. Read only. No account, no key, no fee. Every verdict carries a SHA-256 that a stranger can recompute.
+  license:
+    name: MIT
+    url: https://opensource.org/licenses/MIT
+  contact:
+    url: https://shield.the-horizons-innovation.com/verify-directory/
+servers:
+- url: https://gate.horizonshield.dev
+tags:
+- name: Register
+paths:
+  /register:
+    get:
+      summary: Every row in the register
+      description: Rows are scheduled measurements, not endorsements. An endpoint that is absent has simply never been measured.
+      responses:
+        '200':
+          description: OK
+      tags:
+      - Register
+      operationId: getRegister
+      x-operation-id-source: derived
+  /register/lookup:
+    get:
+      summary: 'One read before connecting (conduct-v1.1 section 7): status verified / pending…'
+      description: ''
+      responses:
+        '200':
+          description: OK
+      tags:
+      - Register
+      operationId: getRegisterLookup
+      x-operation-id-source: derived

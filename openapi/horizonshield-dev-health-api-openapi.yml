@@ -1,0 +1,26 @@
+openapi: 3.2.0
+info:
+  title: MCP conduct register Health API
+  version: 0.4.7
+  description: A register of measured conduct for MCP endpoints. Five stated conditions are measured on a schedule. A condition that could not be measured is never counted as a pass, including for the operator of this gate. Read only. No account, no key, no fee. Every verdict carries a SHA-256 that a stranger can recompute.
+  license:
+    name: MIT
+    url: https://opensource.org/licenses/MIT
+  contact:
+    url: https://shield.the-horizons-innovation.com/verify-directory/
+servers:
+- url: https://gate.horizonshield.dev
+tags:
+- name: Health
+paths:
+  /health:
+    get:
+      summary: Liveness and the deployed commit
+      description: ''
+      responses:
+        '200':
+          description: OK
+      tags:
+      - Health
+      operationId: getHealth
+      x-operation-id-source: derived

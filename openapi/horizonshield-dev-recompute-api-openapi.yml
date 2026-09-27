@@ -1,0 +1,44 @@
+openapi: 3.2.0
+info:
+  title: MCP conduct register Recompute API
+  version: 0.4.7
+  description: A register of measured conduct for MCP endpoints. Five stated conditions are measured on a schedule. A condition that could not be measured is never counted as a pass, including for the operator of this gate. Read only. No account, no key, no fee. Every verdict carries a SHA-256 that a stranger can recompute.
+  license:
+    name: MIT
+    url: https://opensource.org/licenses/MIT
+  contact:
+    url: https://shield.the-horizons-innovation.com/verify-directory/
+servers:
+- url: https://gate.horizonshield.dev
+tags:
+- name: Recompute
+paths:
+  /recompute:
+    post:
+      summary: Work out which canonicalization reproduces a claimed hash
+      description: Send a JSON object as it was published, and a SHA-256 somebody claims was taken over it. Returns every recipe that reproduces the value, whether that recipe is RFC 8785 JCS, how many combinations were tried, and the exact space they covered. A hash that could not be reproduced is reported as not reproduced with the number of combinations tried, and never as invalid. Omit the claimed hash to receive canonical forms and their hashes instead, so a reading can be held by someone who does not operate the source. Contacts nothing. Stores nothing.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+              - object
+              properties:
+                object:
+                  type: object
+                  description: The JSON object as published.
+                claimed:
+                  type: string
+                  description: Optional. 64 hex characters. Omit to receive canonical forms.
+                max_candidates:
+                  type: integer
+                  description: Optional upper bound on combinations tried.
+      responses:
+        '200':
+          description: OK
+      tags:
+      - Recompute
+      operationId: postRecompute
+      x-operation-id-source: derived

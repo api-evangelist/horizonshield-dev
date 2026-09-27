@@ -1,0 +1,26 @@
+openapi: 3.2.0
+info:
+  title: MCP conduct register Sitemap.xml API
+  version: 0.4.7
+  description: A register of measured conduct for MCP endpoints. Five stated conditions are measured on a schedule. A condition that could not be measured is never counted as a pass, including for the operator of this gate. Read only. No account, no key, no fee. Every verdict carries a SHA-256 that a stranger can recompute.
+  license:
+    name: MIT
+    url: https://opensource.org/licenses/MIT
+  contact:
+    url: https://shield.the-horizons-innovation.com/verify-directory/
+servers:
+- url: https://gate.horizonshield.dev
+tags:
+- name: Sitemap.xml
+paths:
+  /sitemap.xml:
+    get:
+      summary: One URL per measured endpoint
+      description: Only endpoints that have actually been measured appear. No page is minted for an endpoint nobody has measured.
+      responses:
+        '200':
+          description: OK
+      tags:
+      - Sitemap.xml
+      operationId: getSitemapXml
+      x-operation-id-source: derived

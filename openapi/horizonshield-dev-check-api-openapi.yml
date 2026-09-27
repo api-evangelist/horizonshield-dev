@@ -1,0 +1,43 @@
+openapi: 3.2.0
+info:
+  title: MCP conduct register Check API
+  version: 0.4.7
+  description: A register of measured conduct for MCP endpoints. Five stated conditions are measured on a schedule. A condition that could not be measured is never counted as a pass, including for the operator of this gate. Read only. No account, no key, no fee. Every verdict carries a SHA-256 that a stranger can recompute.
+  license:
+    name: MIT
+    url: https://opensource.org/licenses/MIT
+  contact:
+    url: https://shield.the-horizons-innovation.com/verify-directory/
+servers:
+- url: https://gate.horizonshield.dev
+tags:
+- name: Check
+paths:
+  /check:
+    post:
+      summary: Measure one endpoint now
+      x-known-limitation: 'Known limitation of this instrument, measured 2026-08-18 and unresolved: requests carrying the Python urllib user agent are refused with 403 by a Cloudflare managed rule in front of this Worker, so that one client is turned away before any code here runs. curl, python-requests, node-fetch, undici, axios, okhttp, Go, Java, Postman and an absent user agent were all measured at 200 on the same day. This is stated here rather than worked around silently.'
+      description: Measures the stated conditions against the endpoint you name. Determinism stays unmeasured unless the owner has recorded consent, because measuring it requires calling a tool on someone else's server.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+              - endpoint
+              properties:
+                endpoint:
+                  type: string
+                  format: uri
+                  description: The MCP endpoint to measure.
+                allow_tool_call:
+                  type: boolean
+                  description: Only the owner of the endpoint may set this true.
+      responses:
+        '200':
+          description: OK
+      tags:
+      - Check
+      operationId: postCheck
+      x-operation-id-source: derived

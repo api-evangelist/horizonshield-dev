@@ -1,0 +1,26 @@
+openapi: 3.2.0
+info:
+  title: MCP conduct register Self API
+  version: 0.4.7
+  description: A register of measured conduct for MCP endpoints. Five stated conditions are measured on a schedule. A condition that could not be measured is never counted as a pass, including for the operator of this gate. Read only. No account, no key, no fee. Every verdict carries a SHA-256 that a stranger can recompute.
+  license:
+    name: MIT
+    url: https://opensource.org/licenses/MIT
+  contact:
+    url: https://shield.the-horizons-innovation.com/verify-directory/
+servers:
+- url: https://gate.horizonshield.dev
+tags:
+- name: Self
+paths:
+  /self:
+    get:
+      summary: This gate measured against its own conditions
+      description: It does not currently pass all of them, and the reason is published.
+      responses:
+        '200':
+          description: OK
+      tags:
+      - Self
+      operationId: getSelf
+      x-operation-id-source: derived

@@ -1,0 +1,26 @@
+openapi: 3.2.0
+info:
+  title: MCP conduct register Verified.json API
+  version: 0.4.7
+  description: A register of measured conduct for MCP endpoints. Five stated conditions are measured on a schedule. A condition that could not be measured is never counted as a pass, including for the operator of this gate. Read only. No account, no key, no fee. Every verdict carries a SHA-256 that a stranger can recompute.
+  license:
+    name: MIT
+    url: https://opensource.org/licenses/MIT
+  contact:
+    url: https://shield.the-horizons-innovation.com/verify-directory/
+servers:
+- url: https://gate.horizonshield.dev
+tags:
+- name: Verified.json
+paths:
+  /verified.json:
+    get:
+      summary: Only the rows that passed every measured condition
+      description: A schema.org Dataset. Returns zero rows when zero rows pass. The bar is not lowered to avoid an empty list.
+      responses:
+        '200':
+          description: OK
+      tags:
+      - Verified.json
+      operationId: getVerifiedJson
+      x-operation-id-source: derived

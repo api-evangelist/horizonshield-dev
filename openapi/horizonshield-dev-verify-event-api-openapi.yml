@@ -1,0 +1,43 @@
+openapi: 3.2.0
+info:
+  title: MCP conduct register Verify Event API
+  version: 0.4.7
+  description: A register of measured conduct for MCP endpoints. Five stated conditions are measured on a schedule. A condition that could not be measured is never counted as a pass, including for the operator of this gate. Read only. No account, no key, no fee. Every verdict carries a SHA-256 that a stranger can recompute.
+  license:
+    name: MIT
+    url: https://opensource.org/licenses/MIT
+  contact:
+    url: https://shield.the-horizons-innovation.com/verify-directory/
+servers:
+- url: https://gate.horizonshield.dev
+tags:
+- name: Verify Event
+paths:
+  /verify-event:
+    post:
+      summary: Recompute a NIP-01 event id and verify its BIP340 signature
+      description: Computed here from the curve parameters, with no library and no network call, so neither the issuer's own verification service nor a dependency has to be trusted. For each field name given, the answer states whether it sits inside the signed bytes or beside them. A valid signature shows that the holder of the key signed those bytes. It does not make the bytes true.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+              - event
+              properties:
+                event:
+                  type: object
+                  description: A complete signed event with id, pubkey, created_at, kind, tags, content and sig.
+                assert_inside:
+                  type: array
+                  items:
+                    type: string
+                  description: Optional field names to locate inside the signed bytes. Both content and tags are searched, and the answer says which one carried the field.
+      responses:
+        '200':
+          description: OK
+      tags:
+      - Verify Event
+      operationId: postVerifyEvent
+      x-operation-id-source: derived

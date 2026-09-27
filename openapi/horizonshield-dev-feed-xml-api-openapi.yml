@@ -1,0 +1,26 @@
+openapi: 3.2.0
+info:
+  title: MCP conduct register Feed.xml API
+  version: 0.4.7
+  description: A register of measured conduct for MCP endpoints. Five stated conditions are measured on a schedule. A condition that could not be measured is never counted as a pass, including for the operator of this gate. Read only. No account, no key, no fee. Every verdict carries a SHA-256 that a stranger can recompute.
+  license:
+    name: MIT
+    url: https://opensource.org/licenses/MIT
+  contact:
+    url: https://shield.the-horizons-innovation.com/verify-directory/
+servers:
+- url: https://gate.horizonshield.dev
+tags:
+- name: Feed.xml
+paths:
+  /feed.xml:
+    get:
+      summary: The same changes as an Atom feed
+      description: For subscribing rather than polling.
+      responses:
+        '200':
+          description: OK
+      tags:
+      - Feed.xml
+      operationId: getFeedXml
+      x-operation-id-source: derived

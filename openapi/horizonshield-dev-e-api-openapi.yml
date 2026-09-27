@@ -1,0 +1,26 @@
+openapi: 3.2.0
+info:
+  title: MCP conduct register E API
+  version: 0.4.7
+  description: A register of measured conduct for MCP endpoints. Five stated conditions are measured on a schedule. A condition that could not be measured is never counted as a pass, including for the operator of this gate. Read only. No account, no key, no fee. Every verdict carries a SHA-256 that a stranger can recompute.
+  license:
+    name: MIT
+    url: https://opensource.org/licenses/MIT
+  contact:
+    url: https://shield.the-horizons-innovation.com/verify-directory/
+servers:
+- url: https://gate.horizonshield.dev
+tags:
+- name: E
+paths:
+  /e/{host}{path}:
+    get:
+      summary: The permanent page for one measured endpoint
+      description: Carries the verdict, the time it was taken, the SHA-256 of the record, and the command to recompute it. 404 when the endpoint has never been measured.
+      responses:
+        '200':
+          description: OK
+      tags:
+      - E
+      operationId: getEByHost}{path
+      x-operation-id-source: derived

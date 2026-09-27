@@ -1,0 +1,26 @@
+openapi: 3.2.0
+info:
+  title: MCP conduct register History API
+  version: 0.4.7
+  description: A register of measured conduct for MCP endpoints. Five stated conditions are measured on a schedule. A condition that could not be measured is never counted as a pass, including for the operator of this gate. Read only. No account, no key, no fee. Every verdict carries a SHA-256 that a stranger can recompute.
+  license:
+    name: MIT
+    url: https://opensource.org/licenses/MIT
+  contact:
+    url: https://shield.the-horizons-innovation.com/verify-directory/
+servers:
+- url: https://gate.horizonshield.dev
+tags:
+- name: History
+paths:
+  /history:
+    get:
+      summary: Past measurements for one endpoint
+      description: Query with ?endpoint=. Records are appended, never edited. The gate keeps the most recent 400 per endpoint (30 until 2026-09-05); older records leave this response, so archive the export.
+      responses:
+        '200':
+          description: OK
+      tags:
+      - History
+      operationId: getHistory
+      x-operation-id-source: derived

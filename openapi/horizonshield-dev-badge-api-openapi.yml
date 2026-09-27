@@ -1,0 +1,37 @@
+openapi: 3.2.0
+info:
+  title: MCP conduct register Badge API
+  version: 0.4.7
+  description: A register of measured conduct for MCP endpoints. Five stated conditions are measured on a schedule. A condition that could not be measured is never counted as a pass, including for the operator of this gate. Read only. No account, no key, no fee. Every verdict carries a SHA-256 that a stranger can recompute.
+  license:
+    name: MIT
+    url: https://opensource.org/licenses/MIT
+  contact:
+    url: https://shield.the-horizons-innovation.com/verify-directory/
+servers:
+- url: https://gate.horizonshield.dev
+tags:
+- name: Badge
+paths:
+  /badge:
+    get:
+      summary: A badge drawn from the register at request time
+      description: Query with ?endpoint=. Short cache, so a green cannot be kept up after the row stops being green.
+      responses:
+        '200':
+          description: OK
+      tags:
+      - Badge
+      operationId: getBadge
+      x-operation-id-source: derived
+  /badge/seal:
+    get:
+      summary: A larger badge, sized for print and for other people's sites
+      description: 'Query with ?endpoint=. Carries the operator label, the endpoint, the measurement date and the verify URL. Add download=1 to receive it as a file. A downloaded file is a snapshot: the date is drawn into the image for exactly that reason, and the live row remains the only current statement.'
+      responses:
+        '200':
+          description: OK
+      tags:
+      - Badge
+      operationId: getBadgeSeal
+      x-operation-id-source: derived

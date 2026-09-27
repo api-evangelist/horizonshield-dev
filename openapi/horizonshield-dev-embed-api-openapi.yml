@@ -1,0 +1,26 @@
+openapi: 3.2.0
+info:
+  title: MCP conduct register Embed API
+  version: 0.4.7
+  description: A register of measured conduct for MCP endpoints. Five stated conditions are measured on a schedule. A condition that could not be measured is never counted as a pass, including for the operator of this gate. Read only. No account, no key, no fee. Every verdict carries a SHA-256 that a stranger can recompute.
+  license:
+    name: MIT
+    url: https://opensource.org/licenses/MIT
+  contact:
+    url: https://shield.the-horizons-innovation.com/verify-directory/
+servers:
+- url: https://gate.horizonshield.dev
+tags:
+- name: Embed
+paths:
+  /embed:
+    get:
+      summary: The verification envelope, ready to paste on your own site
+      description: 'Query with ?endpoint=. The text twin of the badge: JSON-LD for crawlers and the same statement as visible text for language models that fetch the page. Carries status, the record sha256, the recompute recipe and what it does not establish; never a score. Add format=json for the JSON-LD alone. A copy is a snapshot with its date inside; the /e/ page is the live statement.'
+      responses:
+        '200':
+          description: OK
+      tags:
+      - Embed
+      operationId: getEmbed
+      x-operation-id-source: derived

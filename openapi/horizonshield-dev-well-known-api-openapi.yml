@@ -1,0 +1,37 @@
+openapi: 3.2.0
+info:
+  title: MCP conduct register .well Known API
+  version: 0.4.7
+  description: A register of measured conduct for MCP endpoints. Five stated conditions are measured on a schedule. A condition that could not be measured is never counted as a pass, including for the operator of this gate. Read only. No account, no key, no fee. Every verdict carries a SHA-256 that a stranger can recompute.
+  license:
+    name: MIT
+    url: https://opensource.org/licenses/MIT
+  contact:
+    url: https://shield.the-horizons-innovation.com/verify-directory/
+servers:
+- url: https://gate.horizonshield.dev
+tags:
+- name: .well Known
+paths:
+  /.well-known/agent-card.json:
+    get:
+      summary: A2A agent card for this gate
+      description: ''
+      responses:
+        '200':
+          description: OK
+      tags:
+      - .well Known
+      operationId: getWellKnownAgentCardJson
+      x-operation-id-source: derived
+  /.well-known/mcp-register.json:
+    get:
+      summary: Machine readable summary of the register
+      description: ''
+      responses:
+        '200':
+          description: OK
+      tags:
+      - .well Known
+      operationId: getWellKnownMcpRegisterJson
+      x-operation-id-source: derived
