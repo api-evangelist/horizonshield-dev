@@ -1,7 +1,7 @@
 {
   "provider": "horizonshield-dev",
   "sources": [
-    "horizonshield-dev-mcp-conduct-register-openapi.json"
+    "_original/horizonshield-dev-mcp-conduct-register-openapi.json"
   ],
   "outputs": [
     "horizonshield-dev-well-known-api-openapi.yml",
@@ -27,12 +27,11 @@
     "horizonshield-dev-verify-event-api-openapi.yml",
     "horizonshield-dev-watchlist-api-openapi.yml"
   ],
-  "archived": [
-    "archived openapi/horizonshield-dev-mcp-conduct-register-openapi.json"
-  ],
+  "archived": [],
   "errors": [],
   "warnings": [],
   "notes": [
+    "sourced from openapi/_original/ (1 archived document(s)); previously refined output at the top level was skipped rather than re-split",
     "horizonshield-dev-mcp-conduct-register-openapi.json: upgraded openapi 3.1.0 -> OpenAPI 3.2.0",
     "horizonshield-dev-mcp-conduct-register-openapi.json: tagged paths GET /register -> Register",
     "horizonshield-dev-mcp-conduct-register-openapi.json: tagged paths GET /verified.json -> Verified.json",
@@ -81,7 +80,30 @@
     "horizonshield-dev-mcp-conduct-register-openapi.json: declared missing tag: Verified.json",
     "horizonshield-dev-mcp-conduct-register-openapi.json: declared missing tag: Verify Event",
     "horizonshield-dev-mcp-conduct-register-openapi.json: declared missing tag: Watchlist",
-    "apis.yml register: written (+22 apis, 28 total)"
+    "apis.yml register: already-registered"
   ],
-  "skipped": []
+  "skipped": [
+    "horizonshield-dev-badge-api-openapi.yml: previously refined output, superseded by openapi/_original/",
+    "horizonshield-dev-changes-api-openapi.yml: previously refined output, superseded by openapi/_original/",
+    "horizonshield-dev-check-api-openapi.yml: previously refined output, superseded by openapi/_original/",
+    "horizonshield-dev-e-api-openapi.yml: previously refined output, superseded by openapi/_original/",
+    "horizonshield-dev-embed-api-openapi.yml: previously refined output, superseded by openapi/_original/",
+    "horizonshield-dev-ext-api-openapi.yml: previously refined output, superseded by openapi/_original/",
+    "horizonshield-dev-feed-xml-api-openapi.yml: previously refined output, superseded by openapi/_original/",
+    "horizonshield-dev-health-api-openapi.yml: previously refined output, superseded by openapi/_original/",
+    "horizonshield-dev-history-api-openapi.yml: previously refined output, superseded by openapi/_original/",
+    "horizonshield-dev-mcp-api-openapi.yml: previously refined output, superseded by openapi/_original/",
+    "horizonshield-dev-mould-api-openapi.yml: previously refined output, superseded by openapi/_original/",
+    "horizonshield-dev-nenrin-api-openapi.yml: previously refined output, superseded by openapi/_original/",
+    "horizonshield-dev-recompute-api-openapi.yml: previously refined output, superseded by openapi/_original/",
+    "horizonshield-dev-register-api-openapi.yml: previously refined output, superseded by openapi/_original/",
+    "horizonshield-dev-self-api-openapi.yml: previously refined output, superseded by openapi/_original/",
+    "horizonshield-dev-sitemap-xml-api-openapi.yml: previously refined output, superseded by openapi/_original/",
+    "horizonshield-dev-spec-api-openapi.yml: previously refined output, superseded by openapi/_original/",
+    "horizonshield-dev-sweep-api-openapi.yml: previously refined output, superseded by openapi/_original/",
+    "horizonshield-dev-verified-json-api-openapi.yml: previously refined output, superseded by openapi/_original/",
+    "horizonshield-dev-verify-event-api-openapi.yml: previously refined output, superseded by openapi/_original/",
+    "horizonshield-dev-watchlist-api-openapi.yml: previously refined output, superseded by openapi/_original/",
+    "horizonshield-dev-well-known-api-openapi.yml: previously refined output, superseded by openapi/_original/"
+  ]
 }
