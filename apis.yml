@@ -395,6 +395,8 @@ apis:
   humanURL: https://github.com/ogasurfproject-jpg/horizon-shield#readme
   baseURL: https://mcp.horizonshield.dev
   tags:
+  - MCP
+  tags_raw:
   - Mcp
   properties:
   - type: OpenAPI
