@@ -91,3 +91,60 @@ enterprise:
 other_terms:
 - 'Prepaid tickets: some services consume pre-purchased tickets at ¥100 each; no expiry; non-transferable; unused balance refundable only before service delivery (ToS).'
 - 'Cancellation: full refund before report delivery (processed within 7 business days); no refund after delivery; site-inspection attendance refundable until 17:00 the day before (ToS).'
+x-canonical:
+  generated: '2026-10-08'
+  vocabulary: all/0-working/economics/plans-canonical.yml
+  models:
+  - free
+  - subscription
+  units: []
+  plans:
+  - name: MCP / A2A / gate / ledger access
+    access: other
+    model: free
+    model_how: derived
+    units: []
+    periods:
+    - unbounded
+  - name: 無料診断 (free estimate check)
+    access: other
+    model: free
+    model_how: derived
+    units: []
+    periods:
+    - other
+  - name: 見積もり鑑定書 (estimate appraisal PDF)
+    access: other
+    model: subscription
+    model_how: derived
+    units: []
+    periods:
+    - other
+  - name: 建設費診断（専門家）(expert construction-cost diagnosis)
+    access: other
+    model: subscription
+    model_how: derived
+    units: []
+    periods:
+    - other
+  - name: Yakumo ライト (Light)
+    access: other
+    model: subscription
+    model_how: derived
+    units: []
+    periods:
+    - month
+  - name: Yakumo スタンダード (Standard)
+    access: other
+    model: subscription
+    model_how: derived
+    units: []
+    periods:
+    - month
+  - name: Yakumo プレミアム (Premium)
+    access: other
+    model: subscription
+    model_how: derived
+    units: []
+    periods:
+    - month
